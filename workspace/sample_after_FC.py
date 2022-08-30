@@ -28,7 +28,7 @@ import tensorflow as tf
 import random
 # %%
 #dataset = [{'path': path, 'label': path.split('/' )[6] } for path in glob.glob("/content/drive/MyDrive/創造工房/trans_audio/AV/**/*.wav")]
-dataset = [{'path': path, 'label': path.split('\\' )[4] } for path in glob.glob("E:\kadai\Create\AV\**\*.wav")]
+dataset = [{'path': path, 'label': path.split('/' )[3] } for path in glob.glob("../dataset_heart_sound/AV/**/*.wav")]
 #%%
 df = pd.DataFrame.from_dict(dataset)
 
@@ -149,7 +149,10 @@ plt.figure(1, figsize=(20,5))
 plt.title('Normal')
 plt.pcolormesh(t_normal, f_normal, Sxx_normal, cmap='Spectral')
 plt.ylabel('Frequency [Hz]')
-plt.xlabel('Time [sec]')パワースペクトル
+plt.xlabel('Time [sec]')
+
+f_abnormal, t_abnormal, Sxx_abnormal = spectrogram(abnormal['x'].values[0], 4000)
+plt.figure(2, figsize=(20, 5))
 plt.title('abnormal')
 plt.pcolormesh(t_abnormal, f_abnormal, Sxx_abnormal, cmap='Spectral')
 plt.ylabel('Frequency [Hz]')

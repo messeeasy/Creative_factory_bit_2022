@@ -1,5 +1,4 @@
 #%%
-
 import numpy as np
 import wave
 import pandas as pd
@@ -12,7 +11,7 @@ from scipy.fftpack import fft
 
 #%%
 
-Fs1, data1 = wf.read(R"AV\abnormal\9979_AV.wav")
+Fs1, data1 = wf.read("../dataset_heart_sound/AV/abnormal/9979_AV.wav")
 print(data1)
 
 data1 = FC_fucntion.vec_nor(data1)
