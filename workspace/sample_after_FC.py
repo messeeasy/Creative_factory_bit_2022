@@ -149,10 +149,7 @@ plt.figure(1, figsize=(20,5))
 plt.title('Normal')
 plt.pcolormesh(t_normal, f_normal, Sxx_normal, cmap='Spectral')
 plt.ylabel('Frequency [Hz]')
-plt.xlabel('Time [sec]')
-
-f_abnormal, t_abnormal, Sxx_abnormal = spectrogram(abnormal['x'].values[0], 4000)
-plt.figure(2, figsize=(20, 5))
+plt.xlabel('Time [sec]')パワースペクトル
 plt.title('abnormal')
 plt.pcolormesh(t_abnormal, f_abnormal, Sxx_abnormal, cmap='Spectral')
 plt.ylabel('Frequency [Hz]')
