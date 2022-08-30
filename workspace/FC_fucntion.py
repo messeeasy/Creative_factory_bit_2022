@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Personal Processing Functions 1 (ppfunctions_1)
+Personal Processing Functions 1 (ppfunctions_1) -> Frequency Conversion Functions
 Created on Mon Apr  9 11:48:37 2018
 @author: Kevin MAchado
 Module file containing Python definitions and statements

@@ -6,7 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os 
 import scipy.io.wavfile as wf
-import ppf1 
+import FC_fucntion 
 from scipy.signal import kaiserord, lfilter, firwin
 from scipy.fftpack import fft
 
@@ -43,10 +43,10 @@ df.head()
 def get_PCG(path,PCG_list):
     Fs1, data1 = wf.read(path)
 
-    data1 = ppf1.vec_nor(data1)
-    pcgFFT1, vTfft1 = ppf1.fft_k_N(data1, Fs1, 2000)
+    data1 = FC_fucntion.vec_nor(data1)
+    pcgFFT1, vTfft1 = FC_fucntion.fft_k_N(data1, Fs1, 2000)
 
-    E_PCG,C = ppf1.E_VS(pcgFFT1, vTfft1, 'percentage')
+    E_PCG,C = FC_fucntion.E_VS(pcgFFT1, vTfft1, 'percentage')
     
     ##print('Registros Patologicos')
     df=pd.DataFrame(np.round(E_PCG ),index=['Total (%)','0-5Hz','5-25Hz','25-120Hz','120-240Hz','240-500Hz','500-1kHz','1k-2kHz'],columns=['P1'])
