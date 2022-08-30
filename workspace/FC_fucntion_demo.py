@@ -47,6 +47,8 @@ for i in range(len(C)-1):
     plt.show()
     
 print(C)
+print(len(vTfft1))
+print(len(pcgFFT1))
 
 """
 plt.subplot(5,1,1)
