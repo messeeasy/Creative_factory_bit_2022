@@ -17,7 +17,7 @@ print(data1)
 data1 = FC_fucntion.vec_nor(data1)
 pcgFFT1, vTfft1 = FC_fucntion.fft_k(data1, Fs1, 2000)
 
-E_PCG,C = FC_fucntion.E_VS(pcgFFT1, vTfft1, 'percentage')
+E_PCG,C = FC_fucntion.E_VS_100(pcgFFT1, vTfft1, 'percentage')
 
 print(E_PCG[0])
 #%%
@@ -25,7 +25,7 @@ print(E_PCG[0])
 #data = {'N1': np.round(E_PCG )}
 #print(data)
 print('Registros Patologicos')
-df=pd.DataFrame(np.round(E_PCG ),index=['Total (%)','0-5Hz','5-25Hz','25-120Hz','120-240Hz','240-500Hz','500-1kHz','1k-2kHz'],columns=['P1'])
+df=pd.DataFrame(np.round(E_PCG ),index=['Total (%)','0-100Hz','100-200Hz','2000-300Hz','300-400Hz','400-500Hz','500-600Hz','600-700Hz','700-800Hz','800-900Hz','900-1000Hz'],columns=['P1'])
 print (df)
 
 #%%
@@ -36,10 +36,10 @@ plt.figure(1)
 
 plt.subplot(5,1,1)
 plt.title('Transformada de Fourier')
-plt.plot(vTfft1[C[0]:C[7]], pcgFFT1[C[0]:C[7]],'r')
+plt.plot(vTfft1[C[0]:C[10]], pcgFFT1[C[0]:C[10]],'r')
 plt.show()
 
-hz_list = ['0-5Hz','5-25Hz','25-120Hz','120-240Hz','240-500Hz','500-1kHz','1k-2kHz']
+hz_list = ['0-100Hz','100-200Hz','2000-300Hz','300-400Hz','400-500Hz','500-600Hz','600-700Hz','700-800Hz','800-900Hz','900-1000Hz']
 for i in range(len(C)-1):
     plt.subplot(5,1,1)
     plt.title('Transformada de Fourier '+ hz_list[i])
