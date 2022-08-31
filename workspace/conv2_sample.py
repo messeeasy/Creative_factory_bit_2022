@@ -26,8 +26,10 @@ import random
 import torch
 import torch.nn as nn
 #%%
-EPOCH = 50
-BATCH_SIZE=16
+EPOCH = 10
+BATCH_SIZE=4
+WEIGHT_DECAY = 0.005
+LEARNING_RATE = 0.0001
 #%%
 print(os.name)
 if os.name=='posix':
@@ -98,12 +100,10 @@ def repeat_to_length(arr, length):
 for label in column:
     max_length = max(all_df[label].apply(len))
     if(max_length<=6452):
-        max_length=6452
+        max_length=100
     all_df[label] = all_df[label].apply(repeat_to_length, length=max_length)
 
-#%%
-x1=np.stack(all_df['pcg_all'].values, axis=0)
-print(len(x1[0]))
+
 #%%
 x=[]
 
@@ -138,24 +138,57 @@ x=np.array(x)
 print(x.shape)
 #%%
 
-y = np.stack(all_df['label'].values, axis=0)
+Y = np.stack(all_df['label'].values, axis=0)
+y=np.zeros(len(Y))
+for i in range(len(Y)):
+    if Y[i]=='normal':
+        y[i]=0.0
+    elif Y[i]=='abnormal':
+        y[i]=1.0
 
+y=np.array(y)
+#%%
+y
+#%%
+"""
+X = torch.tensor(x, dtype=torch.float32)
+y = torch.tensor(y, dtype=torch.float32) 
+"""
+#x = x[:,:,np.newaxis,:]
+x=x[:,:,np.newaxis,:]
+x = torch.FloatTensor(x)
+y = torch.LongTensor(y)
+#%%
 #%%
 x_train, x_test, y_train, y_test, train_filenames, test_filenames = train_test_split(x, y, all_df['path'].values, train_size = 0.7, test_size=0.3)
 #print("x_train: {0}, x_test: {1}".format(x_train.shape, x_test.shape))
-#%%
-print(x_train[0][9])
 
+#%%
+train_dataset = torch.utils.data.TensorDataset(x_train, y_train)
+test_dataset = torch.utils.data.TensorDataset(x_test, y_test)
+
+X_sample, y_sample = train_dataset[0]
+print(X_sample.size(), y_sample.size())
+#%%
+
+trainloader = torch.utils.data.DataLoader(train_dataset, batch_size = BATCH_SIZE,
+                        shuffle = True, num_workers = 0) #Windows Osの方はnum_workers=1 または 0が良いかも
+testloader = torch.utils.data.DataLoader(test_dataset, batch_size = BATCH_SIZE,
+                        shuffle = False, num_workers = 0) #Windows Osの方はnum_workers=1 または 0が良いかも
 # %%
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
         self.relu = nn.ReLU()
         self.pool = nn.MaxPool2d(2, stride=2)
-
-        self.conv1 = nn.Conv2d(1,16,3)
-        self.conv2 = nn.Conv2d(16,32,3)
-
+        """ """
+        self.conv1 = nn.Conv2d(10,16,(1,5))
+        self.conv2 = nn.Conv2d(16,32,(1,5))
+        
+        """ 
+        self.conv1 = nn.Conv2d(10,16,6)
+        self.conv2 = nn.Conv2d(16,320,6)
+        """
         self.fc1 = nn.Linear(32 * 5 * 5, 120)
         self.fc2 = nn.Linear(120, 10)
 
@@ -177,7 +210,9 @@ device = torch.device("cuda:0")
 net = CNN()
 net = net.to(device)
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam
+#optimizer = optim.Adam
+optimizer = optim.SGD(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=WEIGHT_DECAY)
+
 
 #%%
 print(net)
@@ -185,13 +220,13 @@ print(net)
 print(criterion)
 # %%
 print(optimizer)
-#%%
-X = torch.tensor(x, dtype=torch.float32)
-y = torch.tensor(y, dtype=torch.int64) 
-#%%
 
-trainloader = torch.utils.data.DataLoader(x_train, batch_size = BATCH_SIZE,
-                        shuffle = True, num_workers = 1) #Windows Osの方はnum_workers=1 または 0が良いかも
+#%%
+train_loss_value=[]      #trainingのlossを保持するlist
+train_acc_value=[]       #trainingのaccuracyを保持するlist
+test_loss_value=[]       #testのlossを保持するlist
+test_acc_value=[]        #testのaccuracyを保持するlist
+
 # %%
 for epoch in range(EPOCH):
     print('epoch', epoch+1)    #epoch数の出力
@@ -264,3 +299,4 @@ plt.ylabel('ACCURACY')
 plt.legend(['train acc', 'test acc'])
 plt.title('accuracy')
 plt.savefig("accuracy_image.png")
+# %%
