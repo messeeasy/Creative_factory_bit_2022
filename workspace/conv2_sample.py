@@ -20,16 +20,16 @@ from pathlib import Path
 
 import glob
 import itertools
-import tensorflow as tf
+#import tensorflow as tf
 import random
 
 import torch
 import torch.nn as nn
 #%%
-EPOCH = 10
-BATCH_SIZE=4
+EPOCH = 20
+BATCH_SIZE=40
 WEIGHT_DECAY = 0.005
-LEARNING_RATE = 0.0001
+LEARNING_RATE = 0.1
 #%%
 print(os.name)
 if os.name=='posix':
@@ -142,9 +142,9 @@ Y = np.stack(all_df['label'].values, axis=0)
 y=np.zeros(len(Y))
 for i in range(len(Y)):
     if Y[i]=='normal':
-        y[i]=0.0
+        y[i]=0
     elif Y[i]=='abnormal':
-        y[i]=1.0
+        y[i]=1
 
 y=np.array(y)
 #%%
@@ -179,27 +179,49 @@ testloader = torch.utils.data.DataLoader(test_dataset, batch_size = BATCH_SIZE,
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
-        self.relu = nn.ReLU()
-        self.pool = nn.MaxPool2d(2, stride=2)
+        
         """ """
-        self.conv1 = nn.Conv2d(10,16,(1,5))
-        self.conv2 = nn.Conv2d(16,32,(1,5))
+        fillter_num = 16
+        fillter_W=20
+        pool_W=3
+        stride_conv=1
+        stride_pool=1
+        conv_num=2
+        ow=100#Wの初期化です。
+        self.conv1 = nn.Conv2d(10,fillter_num,(1,fillter_W),stride=stride_conv)
+        #  *conv_numは要件等
+        self.conv2 = nn.Conv2d(fillter_num,fillter_num*conv_num,(1,fillter_W),stride=stride_conv)
         
         """ 
         self.conv1 = nn.Conv2d(10,16,6)
         self.conv2 = nn.Conv2d(16,320,6)
         """
-        self.fc1 = nn.Linear(32 * 5 * 5, 120)
-        self.fc2 = nn.Linear(120, 10)
+        self.relu = nn.ReLU()
+        self.pool = nn.MaxPool2d((1,pool_W),stride=stride_pool)
+        
+        for i in range(1,conv_num):
+            ow=int((ow-fillter_num*conv_num)/stride_conv+1)
+            ow=ow-pool_W+1
+        #self.fc1 = nn.Linear(fillter_num*conv_num * 1 * ow, 100)
+        self.fc1 = nn.Linear(32* 1 * 58, 100)
+        self.fc2 = nn.Linear(100, 2)
 
     def forward(self, x):
+        print(x.shape)
         x = self.conv1(x)
+        print(x.shape)
         x = self.relu(x)
+        print(x.shape)
         x = self.pool(x)
+        print(x.shape)
         x = self.conv2(x)
+        print(x.shape)
         x = self.relu(x)
+        print(x.shape)
         x = self.pool(x)
+        print(x.shape)
         x = x.view(x.size()[0], -1)
+        print(x.shape)
         x = self.fc1(x)
         x = self.relu(x)
         x = self.fc2(x)
