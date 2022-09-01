@@ -2,18 +2,18 @@
 
 ## Content
 ---
-・Outline
-・Execution Method    
+・Outline  
+・Execution Method  
 ・Result  
 ・Current problems  
-・Solution
+・Solution  
 ・Future plans  
 ・Information  
 <br>
 
 ## Outline
 ---
-We located some Github code on heart　beat classification and demonstrated it using our dataset.　　
+We located some Github code on heart beat classification and demonstrated it using our dataset.  
 Link:  
 ・[Frequency Conversion Functions](https://github.com/nicolaxs69/Phonocardiogram_Processing)  
 ・[Heart Sound Classification sample 1](https://github.com/aptr288/Heart_Sound_Classification)  
