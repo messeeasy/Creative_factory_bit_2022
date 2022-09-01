@@ -408,9 +408,91 @@ def fft_k_N(data, samplerate, showFrequency):
     Ref: https://docs.scipy.org/doc/scipy/reference/tutorial/fftpack.html
     '''
     pcgFFT = fft(data)                                                    # FFT Full Vector
+    import matplotlib.pyplot as plt
+    plt.subplot(5,1,1)
+    plt.title('Transformada de Fourier')
+    
     short_pcgFFT = 2.0/np.size(data) * np.abs(pcgFFT[0:np.size(data)//2]) # FFT positives values
     vTfft = np.linspace(0.0, 1.0/(2.0*(1/samplerate)), np.size(data)//2)  # Vector of frequencies (X-axes)
-       
+
     idx = (np.abs(vTfft-showFrequency)).argmin()             # find the value closest to a value
     
     return vec_nor(short_pcgFFT[0:idx]), vTfft[0:idx]
+def E_VS_100_avg (pcgFFT1, vTfft1, on):
+    """
+    Energy of PCG Vibratory Spectrum
+    (frequency components, frequency value vector, on = on percentage or not)
+    According with [1] The total vibratory spectrum can be divided into 10 bands:
+    1. 0-100Hz, 2. 100-200Hz; 3. 200-300Hz; 4. 300~400Hz; 5. 400~500Hz; 6. 500-600Hz; 7. 600-700Hz; 8. 700~800Hz; 9. 800~900Hz; 10. 900~1000Hz
+The PCG signal producess vibrations in the spectrum between 0-2k Hz. 
+[1] Abbas, Abbas K. (Abbas Khudair), Bassam, Rasha and Morgan & Claypool Publishers Phonocardiography signal processing. Morgan & Claypool Publishers, San Rafael, Calif, 2009.
+    """
+    """
+    c1 = (np.abs(vTfft1-5)).argmin()
+    c2 = (np.abs(vTfft1-25)).argmin()
+    c3 = (np.abs(vTfft1-120)).argmin()
+    c4 = (np.abs(vTfft1-240)).argmin()
+    c5 = (np.abs(vTfft1-500)).argmin()
+    c6 = (np.abs(vTfft1-1000)).argmin()
+    c7 = (np.abs(vTfft1-2000)).argmin()
+    """
+    c1 = 100
+    c2 = 200
+    c3 = 300
+    c4 = 400
+    c5 = 500
+    c6 = 600
+    c7 = 700
+    c8 = 800
+    c9 = 900
+    c10 = 1000
+    # All vector energy
+    xAll = Energy_value(pcgFFT1)
+
+    # Procesando de 0.01-100 Hz
+    pcgFFT_F1 = pcgFFT1[0:c1]
+    x1 = Energy_value(pcgFFT_F1)
+    
+    # Procesando de 100-200 Hz
+    pcgFFT_F2 = pcgFFT1[c1:c2]
+    x2 = Energy_value(pcgFFT_F2)
+    
+    # Procesando de 200-300 Hz
+    pcgFFT_F3 = pcgFFT1[c2:c3]
+    x3 = Energy_value(pcgFFT_F3)
+    
+    # Procesando de 300-400 Hz
+    pcgFFT_F4 = pcgFFT1[c3:c4]
+    x4 = Energy_value(pcgFFT_F4)
+    
+    # Procesando de 400-500 Hz
+    pcgFFT_F5 = pcgFFT1[c4:c5]
+    x5 = Energy_value(pcgFFT_F5)
+    
+    # Procesando de 500-600 Hz
+    pcgFFT_F6 = pcgFFT1[c5:c6]
+    x6 = Energy_value(pcgFFT_F6)
+    
+    # Procesando de 600-700 Hz
+    pcgFFT_F7 = pcgFFT1[c6:c7]
+    x7 = Energy_value(pcgFFT_F7)
+
+    # Procesando de 700-800 Hz
+    pcgFFT_F8 = pcgFFT1[c7:c8]
+    x8 = Energy_value(pcgFFT_F8)
+
+    # Procesando de 800-900 Hz
+    pcgFFT_F9 = pcgFFT1[c8:c9]
+    x9 = Energy_value(pcgFFT_F9)
+
+    # Procesando de 900-1000 Hz
+    pcgFFT_F10 = pcgFFT1[c9:c10]
+    x10 = Energy_value(pcgFFT_F10)
+    
+    x = np.array([xAll, x1, x2, x3, x4, x5, x6, x7,x8,x9,x10])
+    
+    if (on == 'percentage'):
+        x = 100*(x/x[0])
+
+    C = [0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10]
+    return x,C
