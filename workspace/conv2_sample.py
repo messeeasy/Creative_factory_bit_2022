@@ -49,9 +49,9 @@ df.head()
 #ppf1ファイルのE_VS関数からHzごとに分けられた情報を入手する。
 def get_PCG(path,PCG_list):
     Fs1, data1 = wf.read(path)
-
-    data1 = FC_fucntion.vec_nor(data1)
-    pcgFFT1, vTfft1 = FC_fucntion.fft_k_N(data1, Fs1, 2000)
+    data2=data1[400:(len(data1)//5+400)]
+    data2 = FC_fucntion.vec_nor(data2)
+    pcgFFT1, vTfft1 = FC_fucntion.fft_k_N(data2, Fs1, 2000)
 
     E_PCG,C = FC_fucntion.E_VS_100(pcgFFT1, vTfft1, 'percentage')
     
@@ -159,6 +159,7 @@ x=x[:,:,np.newaxis,:]
 x = torch.FloatTensor(x)
 y = torch.LongTensor(y)
 #%%
+del x,y
 #%%
 x_train, x_test, y_train, y_test, train_filenames, test_filenames = train_test_split(x, y, all_df['path'].values, train_size = 0.7, test_size=0.3)
 #print("x_train: {0}, x_test: {1}".format(x_train.shape, x_test.shape))
@@ -208,21 +209,21 @@ class CNN(nn.Module):
 
 
     def forward(self, x):
-        print(x.shape)
+        #print(x.shape)
         x = self.conv1(x)
-        print(x.shape)
+        #print(x.shape)
         x = self.relu(x)
-        print(x.shape)
+        #print(x.shape)
         x = self.pool(x)
-        print(x.shape)
+        #print(x.shape)
         x = self.conv2(x)
-        print(x.shape)
+        #print(x.shape)
         x = self.relu(x)
-        print(x.shape)
+        #print(x.shape)
         x = self.pool(x)
-        print(x.shape)
+        #print(x.shape)
         x = x.view(x.size()[0], -1)
-        print(x.shape)
+        #print(x.shape)
         x = self.fc1(x)
         x = self.relu(x)
         x = self.fc2(x)
@@ -299,6 +300,7 @@ for epoch in range(EPOCH):
     test_loss_value.append(sum_loss*BATCH_SIZE/len(testloader.dataset))
     test_acc_value.append(float(sum_correct/sum_total))
 
+
 plt.figure(figsize=(6,6))      #グラフ描画用
 
 #以下グラフ描画
@@ -312,7 +314,6 @@ plt.legend(['train loss', 'test loss'])
 plt.title('loss')
 plt.savefig("output/loss_image_cnn_conv2d.png")
 plt.clf()
-
 plt.plot(range(EPOCH), train_acc_value)
 plt.plot(range(EPOCH), test_acc_value, c='#00ff00')
 plt.xlim(0, EPOCH)
