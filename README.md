@@ -1,312 +1,134 @@
 # Creative_factory_bit_2022
 
-
-
-
-##心音の主成分と心雑音のHz
-https://www.jstage.jst.go.jp/article/jjsem/17/1/17_39/_pdf
-
-
-
-# 概要
-
-このプロダクトは，保育園向けの連絡帳機能を実装したWEBアアプリケーションです．
-フロントエンドにはFlutter，バックエンドにはDjango（Django Rest Framework）を使用しています．
-
-# 環境構築
-
-## ローカルでの環境構築
-
-1. Cloneする
-2. pipenv install
-2. postgresqlを入れる
-   - Macの人は「brew install postgresql」
-   - Windowsの人は調査中
-3. おわり
-
-## デプロイ or リモートで開発する人
-
-herokuとGithubアカウントをリンク
-おわり
-コードを書き換えたらDeply
-
-## データベースの切り替え
-
-ローカルDB(db.sqlite3ファイル)とリモートDB(heroku Postgres)の切り替えが可能．
-ローカルDBのメリットは設定がいらないこと，リモートDBの利点はDeploy時にmigrate関連でエラーが出なくなること
-
-### 方法
-
-リモートDBのURIをローカルの環境変数DATABASE_URLに設定する．
-
-リモートURIの取得方法は以下の2通り
-
-- ターミナルから`heroku config:get -a {HEROKU_APP_NAME} DATABASE_URL`を実行する
-- [herokuのDBのページ](https://data.heroku.com)からDBを選び，Settings→View  Credentialsで表示
-
-環境変数の設定はWindowsとmacOSで異なる
-
-macOSの場合
-
-```bash
-export DATABASE_URL={さっきコピーしたURI}
-```
-
-リモートDBのURIは突然変わる可能性があるため気をつけること，環境変数もログアウトや再起動などで消える場合があるため確認すること
-
-### リモートDBの構成図
-
-![zu](https://user-images.githubusercontent.com/40960166/186350100-39da9775-e408-4c52-ab66-d114e6df16bc.jpg)
-
-# API
-
-## 概要
-
-保育園向け連絡帳アプリの開発者向け API （さむいなまこ API ）の仕様を説明します．
-全てのデータはJSON形式で送受信が行われます．
-
-## パスで要求されるパラメーター
-
-| パラメーター | 概要 | 生成方法 | 
-| :---------: | :---: | :------------------ |
-| `child_id` | 各園児に振られる固有のID | adminから追加 |
-| `staff_id` | 各保育士に振られる固有のID | adminから追加 |
-
-## さむいなまこ API を使って出来ること
-
-| No. | 画面 | 出来ること | メソッド | URI | 
-| :--: | :---: |:--- | :---------------: | :------------------ |
-| 1 | 保護者用| [指定した child_id に対応する連絡帳の情報を返す](#1-指定した-child_id-に対応する連絡帳の情報を返す)     | GET | /child/{child_id}/ |
-| 2 | 保護者用| [任意の連絡帳に記入されたメッセージを保存する](#2-任意の連絡帳に記入されたメッセージを保存する) | POST | /child/{child_id}/write/  |
-| 3 | 保育士用| [園児一覧を返す](#3-園児一覧を返す)   | GET | /staff/{staff_id}/ |
-| 4 | 保育士用| [指定した child_id に対応する連絡帳の情報を返す](#4-指定した-child_id-に対応する連絡帳の情報を返す) | GET | /staff/{staff_id}/{child_id}/ |
-| 5 | 保育士用| [任意の連絡帳のメッセージに対する返信を保存する](#5-任意の連絡帳のメッセージに対する返信を保存する) | POST | /staff/{staff_id}/{child_id}/reply/ |
-
-### 保護者用
-
-#### 1. 指定した child_id に対応する連絡帳の情報を返す
-
-今日の連絡帳があったらそれを開く，なかったら新規作成される．
-child_idがなかったら404エラーが返される．
-
-##### エンドポイント
-
-```URL
-GET /child/{child_id}/
-```
-
-##### パラメーター
-
-`{child_id}`
-
-各園児の連絡帳が開かれる
-
-##### 返却データ（JSON形式）
-
-| JSON Key | 型 | サイズ | デフォルト値 | 値の説明 |
-|:-----------:|:-----------:|:-----------:|:-----------:|:-----------|
-| `note_id` | 文字列 | - | 自動生成 | 連絡帳のID |
-| `child_id` | 文字列 | - | - | 園児のID |
-| `child_name` | 文字列 | 50 | - | 園児の名前|
-| `date` | 文字列 | 500 | - | 保護者が連絡帳を記入した日時 |
-| `message_parent` | 文字列 | 500 | - | 保護者からのメッセージ |
-| `message_staff` | 文字列 | 500 | - | 保育士からの返信 |
-| `staff_id` | 文字列 | - | - | 返信した保育士のID |
-| `staff_name` | 文字列 | 50 | - | 返信した保育士の名前|
-| `body_templeture` | 文字列 | - | 前回の入力値 | 園児の体温 |
-| `pickup_time` | 文字列 | - | 前回の入力値 | お迎えの時間 |
-| `pickup_person` | 文字列 | 50 | 前回の入力値 | お迎えの方 |
-| `write_flag` | 真偽値 | - | False | 提出がされているか否か |
-| `reply_flag` | 真偽値 | - | False | 返信がされているか否か |
-
-##### 応答の例
-
-```JSON
-{
-  "note_id": "10",
-  "child_id": "1",
-  "child_name": "豊洲太郎",
-  "date": "2022-08-25",
-  "message_parent": "朝ご飯を食べるのを嫌がりました，あまり多く食べていないのでお昼頃に機嫌が悪くなりそうです",
-  "message_staff": "",
-  "staff_id": "None",
-  "staff_name": "None",
-  "body_temperature": "36.5",
-  "pickup_time": "2022-01-01T18:30:00",
-  "pickup_person": "父",
-  "write_flag": True,
-  "replay_flag": False
-}
-```
-
-#### 2. 任意の連絡帳に記入されたメッセージを保存する
-
-保護者が連絡帳に記入した文字列をデータベースに保存する．
-
-##### エンドポイント
-
-```URL
-POST /child/{child_id}/write/
-```
-
-##### パラメーター
-
-`{child_id}`
-
-`{child_id}`のデータが更新される
-
-##### POSTデータ（JSON形式）
-
-変更がない部分は，[事前にGETしたデータ](#1-指定した-child_id-に対応する連絡帳の情報を返す)を使用する．
-すべてのキーは必須である．
-
-| JSON Key | 型 | サイズ | デフォルト値 | 値の説明 |
-|:-----------:|:-----------:|:----------:|:-----------:|:-----------|
-| `note_id` | 文字列 | - | 自動生成 | 連絡帳のID |
-| `message_parent` | 文字列 | 500 | - | 保護者からのメッセージ |
-| `body_templeture` | 文字列 | - | 前回の入力値 | 園児の体温 |
-| `pickup_time` | 文字列 | - | 前回の入力値 | お迎えの時間 |
-| `pickup_person` | 文字列 | 50 | - | お迎えの方 |
-
-##### POSTの例
-
-```JSON
-{
-  "note_id": "10",
-  "message_parent": "急に熱が出たのでお休みします",
-  "body_temperature": "38.2",
-  "pickup_time": "2022-01-01T18:30:00",
-  "pickup_person": "父"
-}
-```
-
-### 保育士用
-
-#### 3. 園児一覧を返す
-
-園児の一覧を配列形式で返す．
-
-##### エンドポイント
-
-```URL
-GET /staff/{staff_id}/
-```
-
-##### パラメーター
-
-`{staff_id}`
-
-登録されているstaff_idであれば，その値によらず全ての園児の情報を返す．
-
-##### 返却データ（JSON形式）
-
-| JSON Key | 型 | サイズ | デフォルト値 | 値の説明 |
-|:----------:|:-----------:|:-----------:|:-----------:|:-----------|
-| `child_id` | 文字列 | - | - | 園児のID |
-| `child_name` | 文字列 | 50 | - | 園児の名前 |
-| `parent_name` | 文字列 | 50 | - | 親の名前 |
-| `reply_flag` | 真偽値 | - | False | 返信がされているか否か|
-
-##### 応答の例
-
-```JSON
-[
-  {
-    "child_id": "1",
-    "name": "豊洲太郎",
-    "parent_name": "豊洲貴子",
-    "reply_flag" : True
-  },
-  {
-    "child_id": "2",
-    "name": "有楽町ミカ",
-    "parent_name": "有楽町英二",
-    "reply_flag" : True
-  },
-  {
-    "child_id": "3",
-    "name": "月島日向",
-    "parent_name": "月島昭代",
-    "reply_flag" : False
-  }
-]
-
-```
-
-
-#### 4. 指定した child_id に対応する連絡帳の情報を返す
-
-##### エンドポイント
-
-```URL
-GET  /staff/{staff_id}/{child_id}/
-```
-
-##### パラメーター
-
-`{staff_id}`, `{child_id}`
-
-##### 返却データ（JSON形式）
-
-| JSON Key | 型 | サイズ | デフォルト値 | 値の説明 |
-|:-----------:|:-----------:|:-----------:|:-----------:|:-----------|
-| `note_id` | 文字列 | - | 自動生成 | 連絡帳のID |
-| `child_id` | 文字列 | - | - | 園児のID |
-| `child_name` | 文字列 | 50 | - | 園児の名前|
-| `date` | 文字列 | - | - | 保護者が連絡帳を記入した日時 |
-| `message_parent` | 文字列 | 500 | - | 保護者からのメッセージ |
-| `message_staff` | 文字列 | 500 | - | 保育士からの返信 |
-| `staff_id` | 文字列 | - | - | 返信した保育士のID |
-| `staff_name` | 文字列 | 50 | - | 返信した保育士の名前|
-| `body_templeture` | 文字列 | - | 前回の入力値 | 園児の体温 |
-| `pickup_time` | 文字列 | - | 前回の入力値 | お迎えの時間 |
-| `pickup_person` | 文字列 | 50 | - | お迎えの方 |
-
-##### 応答の例
-
-```JSON
-{
-  "note_id": "10",
-  "child_id": "1",
-  "child_name": "豊洲太郎",
-  "date": "2022-08-25",
-  "message_parent": "朝ご飯を食べるのを嫌がりました，あまり多く食べていないのでお昼頃に機嫌が悪くなりそうです",
-  "message_staff": "",
-  "staff_id": "None",
-  "staff_name": "None",
-  "body_temperature": "36.5",
-  "pickup_time": "2022-01-01T18:30:00",
-  "pickup_person": "父"
-}
-```
-
-#### 5. 任意の連絡帳のメッセージに対する返信を保存する
-
-保育士が連絡帳に記入した文字列をデータベースに保存する．
-
-##### エンドポイント
-
-```URL
- POST /staff/{staff_id}/{child_id}/reply/
-```
-
-##### パラメーター
-
-`{staff_id}`, `{child_id}`
-
-##### POSTデータ（JSON形式）
-
-| JSON Key | 型 | サイズ | デフォルト値 | 値の説明 |
-|:-----------:|:-----------:|:-----------:|:-----------:|:-----------|
-| `note_id` | 文字列 | - | 自動生成 | 連絡帳のID |
-| `message_staff` | 文字列 | 500 | - | 保育士のからの返信 |
-
-
-##### POSTの例
-
-```JSON
-{
-  "note_id": "10",
-  "message_staff": "かしこまりました，お昼前に気をつけます"
-}
-```
+## Content
+---
+・Outline
+・Execution Method    
+・Result  
+・Current problems  
+・Solution
+・Future plans  
+・Information  
+<br>
+
+## Outline
+---
+We located some Github code on heart　beat classification and demonstrated it using our dataset.　　
+Link:  
+・[Frequency Conversion Functions](https://github.com/nicolaxs69/Phonocardiogram_Processing)  
+・[Heart Sound Classification sample 1](https://github.com/aptr288/Heart_Sound_Classification)  
+・[Heart Sound Classification sample 2](https://github.com/18D070001/Heart_sound_classification)  
+  
+Below is the current progress (will be updated as needed)  
+<br>
+・SVM, MLP, CNN based model training  
+・LSTM-based training (using mcff features)  
+・CNN-based training (using mel-spectrogram features)  
+・Frequency Analysis  
+・Learning with SVM, MLP, and CNN-based models on frequency-converted data  
+・Learning with 2D CNN-based models  
+<br>
+Each file name, etc., should be modified for clarity. 
+<br>
+
+## Execution Method 
+---
+The Dataset should be placed in the root directory as 'dataset_heart_sound'.
+Please refer to the following for the contents of 'dataset_heart_sound'.  
+
+Creative_factory_bit_2022<br>
+|-- dataset_heart_sound/<br>
+|	|-- AV/<br>
+| |	|-- abnormal/<br>
+| |	'-- normal/<br>
+| |-- MV/<br>
+| |	|-- abnormal/<br>
+| |	'-- normal/<br>
+| |-- PV/<br>
+| |	|-- abnormal/<br>
+| |	'-- normal/<br>
+| |-- TV/<br>
+| |	|-- abnormal/<br>
+| |	'-- normal/<br>
+| |-- abnormal/<br>
+| '-- normal/<br>
+'-- workspace/<br>
+
+See requirements.txt for the libraries currently in use.<br>
+### Correspondence table for each file (to be added later)<br>
+| File name | Detail | 
+| :---------:| :------------------ |
+| `` | Demo | 
+| `` | Demo | 
+<br>
+
+The CNN_demo folder is the ipynb file in Audio Classification ANN CNN Keras/References is the demo file.  
+<br>
+
+## Result
+---
+### Data of heart sound
+A plot of the heart sound data for the current data set shows the following variation.<br>
+![Screenshot from 2022-08-19 11-42-26](https://user-images.githubusercontent.com/52558553/187862288-c509ddaa-35cb-490a-be8a-abfcd6a65d64.png)
+![Screenshot from 2022-08-19 11-44-07](https://user-images.githubusercontent.com/52558553/187862311-51a80084-e7c5-4da5-976c-1035ee6003ea.png)
+![Screenshot from 2022-08-19 11-45-11](https://user-images.githubusercontent.com/52558553/187862326-5229c973-eba3-4a2d-a4c5-e61dea5d0e58.png)
+
+The frequency of heart sounds is less than 1 kHz, and the main component is about 100 Hz, while heart murmurs are relatively high frequency and are often found above 200 Hz compared to I and II sounds. Therefore, frequency analysis is used to analyze abnormal heart sounds.  
+[Ref 1: Sorry for Japanese. I think you can find it if you look for it.](https://www.cst.nihon-u.ac.jp/research/gakujutu/53/pdf/M-20.pdf)  
+ 
+
+### These data were trained on below, but the accuracy are low  and unstable.    
+<br>
+・SVM, MLP, CNN based model training<br>
+・LSTM-based training (using mcff features)<br>  
+・CNN-based training (using mel-spectrogram features)<br>  
+・Training with SVM, MLP, and CNN-based models on frequency-converted data<br>  
+・Learning with 2D CNN-based models<br>  
+<br>
+
+Example:  
+![Screenshot from 2022-09-01 17-05-31](https://user-images.githubusercontent.com/52558553/187864502-3b8052d3-30ad-4a58-b3b8-cdd795c72446.png)
+<br>
+
+## Current problem
+---
+### 1. Data size is too long   
+Dozens of heartbeats in one heartbeat file, so better to split them up for memory and learning purposes
+### 2. Lots of noise  
+When the audio file is checked, it is the sound of breathing, and some files contain the sound of a baby's cry.  
+<br>
+
+## Solution
+---
+
+### 1.1 Split data and perform cross-validation methods
+### 2.1 Find the standard deviation of the signal and replace the time series with values of standard deviation*2 or 3 with the mean
+### 2.2 Use a high-pass filter or low-pass filter
+<br>
+
+## Future plans
+---
+<br>
+
+1. Data segmentation  
+2. Noise removal  
+3. File organization  
+4. K-fold cross validation  
+5. Adding or modifying features  
+6. Adjusting model layers 
+7. Adjust hyperparameters 
+8. Create LSTM 2D model (if available) 
+9. Plot-image-based classification (if available)  
+<br>
+
+| Schedule | 9/1 | 9/2 | 9/3 | 9/4 | 9/5 | 9/6 | 9/7 | 9/8 | 9/9 ~ |  
+|:-----------:|:-----------:|:-----------:|:-----------:|:-----------|:-----------:|:-----------:|:-----------:|:-----------|:-----------|  
+| Task number | 1, 2 | 2, 3 | 3, 4 | 5, 6, 7 | 6, 7 | 8, 9 | 9 | 9 | 7 |  
+<br>
+
+## Information
+---
+Currently, Iijima and Yamamoto are working on the project.  
+Also, Iijima has not progressed since he participated in an internship last week.  
+We will concentrate on the project until 9/8, so the result will be last minute.  
+Sorry.

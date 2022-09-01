@@ -61,16 +61,20 @@ Creative_factory_bit_2022<br>
 | `` | Demo | 
 <br>
 
-CNN_demoフォルダはAudio Classification ANN CNN Keras/References内のipynbファイルがでもファイルです。  
+CNN_demoフォルダはAudio Classification ANN CNN Keras/References内のipynbファイルがデモファイルです。  
 <br>
 
 ## 結果
 ---
 ### 心音データ
-心音データをプロットすると以下のようにばらつきがあることが分かります。<br>
+今回のデータセットの心音データをプロットすると以下のようにばらつきがあることが分かります。<br>
 ![Screenshot from 2022-08-19 11-42-26](https://user-images.githubusercontent.com/52558553/187862288-c509ddaa-35cb-490a-be8a-abfcd6a65d64.png)
 ![Screenshot from 2022-08-19 11-44-07](https://user-images.githubusercontent.com/52558553/187862311-51a80084-e7c5-4da5-976c-1035ee6003ea.png)
 ![Screenshot from 2022-08-19 11-45-11](https://user-images.githubusercontent.com/52558553/187862326-5229c973-eba3-4a2d-a4c5-e61dea5d0e58.png)
+
+心音の周波数は1kHz以下，主成分は100Hz程度であり，心雑音はI音，II音に比べて比較的高周波で200Hz以上に見られることが多いです。そのため、周波数解析により、心音の異常解析を行う。  
+[Ref 1 日本語でごめんなさい。探せばあると思います。](https://www.cst.nihon-u.ac.jp/research/gakujutu/53/pdf/M-20.pdf)  
+ 
 
 これらのデータを以下で学習させましたが、いずれもテストでの精度は低く、不安定です。  
 <br>
@@ -120,4 +124,8 @@ CNN_demoフォルダはAudio Classification ANN CNN Keras/References内のipynb�
 | Task number | 1, 2 | 2, 3 | 3, 4 | 5, 6, 7 | 6, 7 | 8, 9 | 9 | 9 | 7 |  
 <br>
 
-
+## 諸連絡
+---
+現在、飯島、山本の二人でプロジェクトを進めています。  
+また、飯島が先週インターンに参加していたため、進んでいません。  
+9/8まで集中してやるので、結果はぎりぎりになります。すいません。  
