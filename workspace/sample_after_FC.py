@@ -28,7 +28,13 @@ import tensorflow as tf
 import random
 # %%
 #dataset = [{'path': path, 'label': path.split('/' )[6] } for path in glob.glob("/content/drive/MyDrive/創造工房/trans_audio/AV/**/*.wav")]
-dataset = [{'path': path, 'label': path.split('/' )[3] } for path in glob.glob("../dataset_heart_sound/AV/**/*.wav")]
+#dataset = [{'path': path, 'label': path.split('/' )[3] } for path in glob.glob("../dataset_heart_sound/AV/**/*.wav")]
+print(os.name)
+if os.name=='posix':
+    dataset = [{'path': path, 'label': path.split('/' )[3] } for path in glob.glob("../dataset_heart_sound/AV/*/*.wav")]
+else:
+    dataset = [{'path': path, 'label': path.split('\\' )[3] } for path in glob.glob("..\dataset_heart_sound\AV\**\*.wav")]
+
 #%%
 df = pd.DataFrame.from_dict(dataset)
 
