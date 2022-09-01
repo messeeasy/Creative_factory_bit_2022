@@ -26,10 +26,10 @@ import random
 import torch
 import torch.nn as nn
 #%%
-EPOCH = 20
-BATCH_SIZE=40
-WEIGHT_DECAY = 0.005
-LEARNING_RATE = 0.1
+EPOCH = 100
+BATCH_SIZE=20
+#WEIGHT_DECAY = 0.1
+LEARNING_RATE = 0.5
 #%%
 print(os.name)
 if os.name=='posix':
@@ -182,7 +182,7 @@ class CNN(nn.Module):
         
         """ """
         fillter_num = 16
-        fillter_W=20
+        fillter_W=10
         pool_W=3
         stride_conv=1
         stride_pool=1
@@ -203,8 +203,9 @@ class CNN(nn.Module):
             ow=int((ow-fillter_num*conv_num)/stride_conv+1)
             ow=ow-pool_W+1
         #self.fc1 = nn.Linear(fillter_num*conv_num * 1 * ow, 100)
-        self.fc1 = nn.Linear(32* 1 * 58, 100)
+        self.fc1 = nn.Linear(32* 1 * 78, 100)
         self.fc2 = nn.Linear(100, 2)
+
 
     def forward(self, x):
         print(x.shape)
@@ -232,8 +233,8 @@ device = torch.device("cuda:0")
 net = CNN()
 net = net.to(device)
 criterion = nn.CrossEntropyLoss()
-#optimizer = optim.Adam
-optimizer = optim.SGD(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=WEIGHT_DECAY)
+optimizer = optim.Adam(net.parameters(), lr=LEARNING_RATE)#, weight_decay=WEIGHT_DECAY)
+#optimizer = optim.SGD(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=WEIGHT_DECAY)
 
 
 #%%
@@ -309,7 +310,7 @@ plt.xlabel('EPOCH')
 plt.ylabel('LOSS')
 plt.legend(['train loss', 'test loss'])
 plt.title('loss')
-plt.savefig("loss_image.png")
+plt.savefig("output/loss_image_cnn_conv2d.png")
 plt.clf()
 
 plt.plot(range(EPOCH), train_acc_value)
@@ -320,5 +321,5 @@ plt.xlabel('EPOCH')
 plt.ylabel('ACCURACY')
 plt.legend(['train acc', 'test acc'])
 plt.title('accuracy')
-plt.savefig("accuracy_image.png")
+plt.savefig("output/accuracy_image_cnn_conv2d.png")
 # %%
