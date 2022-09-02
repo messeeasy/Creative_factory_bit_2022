@@ -100,8 +100,8 @@ plt.axhline(data_mean,color="r")
 plt.axhline(-1*data_mean,color="r")
 plt.axhline(2*data_st,color="g")
 plt.axhline(-2*data_st,color="g")
-plt.xlim([13800,14000])
-plt.ylim([-10000,10000])
+#plt.xlim([13800,14000])
+#plt.ylim([-10000,10000])
 plt.figure(figsize=(6,6))
 p,v=FC_fucntion.fft_k(plt_data, data_fs, 1000)####
 plt.plot(v,p)
@@ -115,31 +115,5 @@ w.setframerate(data_fs)
 #write("output_data_low.wav", rate=data_fs, data=data_low)
 sf.write("output_data_low.wav", plt_data, data_fs)###
 w.close()
-
-# %%
-#フィルタ後のデータを保存できる関数save_heart_soundの使い方
-data_g=[]
-for path in df['path']:
-    data_x,data_fs=dataloder.datalode(path,4)
-    data_std=noise_delet.standard_deviation(data_x)
-    
-    fp = 90       #通過域端周波数[Hz]
-    fs = 60      #阻止域端周波数[Hz]
-    gpass = 5       #通過域端最大損失[dB]
-    gstop = 40      #阻止域端最小損失[dB]
- 
-    data_hig = noise_delet.highpass(data_std, data_fs, fp, fs, gpass, gstop)
-
-    fp = 300       #通過域端周波数[Hz]kotei
-    fs = 1000      #阻止域端周波数[Hz]
-    gpass = 5     #通過域端最大損失[dB]
-    gstop = 40      #阻止域端最小損失[dB]kotei
- 
- 
-    data_low = noise_delet.lowpass(data_hig, data_fs, fp, fs, gpass, gstop)
-    data_g.append(data_low)
-
-    noise_delet.save_heart_sound(data_low,data_fs,path)
-    
 
 # %%
