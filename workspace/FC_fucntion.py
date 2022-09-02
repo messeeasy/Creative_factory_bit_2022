@@ -269,9 +269,14 @@ def FpassBand_1(X,Fs,H_cutoff_hz, L_cutoff_hz):
     ripple_db = 60.0
     # Compute the order and Kaiser parameter for the FIR filter.
     N, beta = kaiserord(ripple_db, width)
+    if Fs % 2==0:
+        pass_z=True
+    else:
+        pass_z=False
+
     # Use firwin with a Kaiser window to create a lowpass FIR filter.
     taps = firwin(N, L_cutoff_hz/nyq_rate, window=('kaiser', beta))
-    taps_2 = firwin(N, H_cutoff_hz/nyq_rate, pass_zero=False)
+    taps_2 = firwin(N, H_cutoff_hz/nyq_rate, pass_zero=pass_z)
     # Use lfilter to filter x with the FIR filter.
     X_l= lfilter(taps, 1.0, X)
     X_pb= lfilter(taps_2, 1.0, X_l)
@@ -408,9 +413,9 @@ def fft_k_N(data, samplerate, showFrequency):
     Ref: https://docs.scipy.org/doc/scipy/reference/tutorial/fftpack.html
     '''
     pcgFFT = fft(data)                                                    # FFT Full Vector
-    import matplotlib.pyplot as plt
-    plt.subplot(5,1,1)
-    plt.title('Transformada de Fourier')
+    #import matplotlib.pyplot as plt
+    #plt.subplot(5,1,1)
+    #plt.title('Transformada de Fourier')
     
     short_pcgFFT = 2.0/np.size(data) * np.abs(pcgFFT[0:np.size(data)//2]) # FFT positives values
     vTfft = np.linspace(0.0, 1.0/(2.0*(1/samplerate)), np.size(data)//2)  # Vector of frequencies (X-axes)
