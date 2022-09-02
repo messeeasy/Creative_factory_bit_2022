@@ -50,7 +50,6 @@ df.head()
 
 # %%
 #make the lenght of all audio files same by repeating audio file contents till its length is equal to max length audio file
-max_length = max(df['x'].apply(len))
 
 # Kaggle: What's in a heartbeat? - Peter Grenholm
 def repeat_to_length(arr, length):
@@ -65,8 +64,7 @@ def repeat_to_length(arr, length):
         result[pos:length] = arr[:length-pos]
     return result
 
-df['x'] = df['x'].apply(repeat_to_length, length=max_length)
-df.head()
+
 
 #%%
 #つなげた部分pcgc01などの長さもすべて一緒にする。
@@ -77,28 +75,43 @@ df.head()
 """ """
 data=[]
 for path in df['path']:
-    data_x,data_fs=dataloder.datalode(path)
+    data_x,data_fs=dataloder.datalode(path,4)
+    data_std,me,st=noise_delet.standard_deviation(data_x,3)
     
-    fp = 100       #通過域端周波数[Hz]
-    fs = 70      #阻止域端周波数[Hz]
+    fp = 90       #通過域端周波数[Hz]
+    fs = 60      #阻止域端周波数[Hz]
     gpass = 5       #通過域端最大損失[dB]
     gstop = 40      #阻止域端最小損失[dB]
  
-    data_hig = noise_delet.highpass(data_x, data_fs, fp, fs, gpass, gstop)
+    data_hig = noise_delet.highpass(data_std, data_fs, fp, fs, gpass, gstop)
 
     fp = 300       #通過域端周波数[Hz]kotei
     fs = 400      #阻止域端周波数[Hz]
     gpass = 5     #通過域端最大損失[dB]
     gstop = 40      #阻止域端最小損失[dB]kotei
  
+ 
     data_low = noise_delet.lowpass(data_hig, data_fs, fp, fs, gpass, gstop)
     data.append(data_low)
-    print(data_low.shape)
-
+    #print(data_low.shape)
+#%%
 df['filter'] = data
+#%
+#%%
+
+max_length = max(df['filter'].apply(len))
+#print(max_length)
 df['filter'] = df['filter'].apply(repeat_to_length, length=max_length)
 df.head()
-del data,data_hig,data_low
+
+
+""" 
+max_length = max(df['x'].apply(len))
+df['x'] = df['x'].apply(repeat_to_length, length=max_length)
+df.head()
+"""
+del data
+
 
 #%%
 x = np.stack(df['filter'].values, axis=0)
@@ -188,7 +201,7 @@ y_train_hot = tf.keras.utils.to_categorical(y_train_int_categories)
 y_test_hot = tf.keras.utils.to_categorical(y_test_int_categories)
 
 hist = model.fit(x_train, y_train_hot, 
-                epochs=300,
+                epochs=100,
                 validation_data=(x_test, y_test_hot), verbose=1)
 
 # %% [markdown]
@@ -226,3 +239,4 @@ plt.ylabel('loss')
 plt.xlabel('epoch')
 
 plt.show()
+# %%

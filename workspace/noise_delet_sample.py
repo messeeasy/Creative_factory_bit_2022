@@ -1,5 +1,6 @@
 
 #%%
+from statistics import mean
 import numpy as np
 import wave
 import pandas as pd
@@ -51,8 +52,8 @@ df
 # %%
 print(df['path'][0])
 breath=R"../dataset_heart_sound/AV/abnormal/68175_AV.wav"
-data,data_fs=dataloder.datalode(df['path'][0])
-#data,data_fs=dataloder.datalode(breath)
+#data,data_fs=dataloder.datalode(df['path'][0])
+data,data_fs=dataloder.datalode(breath)
 print(data)
 print(len(data))
 print(data.shape)
@@ -71,16 +72,16 @@ plt.figure(figsize=(6,6))
 p,v=FC_fucntion.fft_k(data, data_fs, 1000)
 plt.plot(v,p)
 # %%
-data_std=noise_delet.standard_deviation(data)
+data_std,data_mean,data_st=noise_delet.standard_deviation(data,2)
 
-fp = 100       #通過域端周波数[Hz]
-fs = 70      #阻止域端周波数[Hz]
+fp = 90       #通過域端周波数[Hz]
+fs = 60      #阻止域端周波数[Hz]
 gpass = 5       #通過域端最大損失[dB]
 gstop = 40      #阻止域端最小損失[dB]
  
-data_hig = noise_delet.highpass(data, data_fs, fp, fs, gpass, gstop)
+data_hig = noise_delet.highpass(data_std, data_fs, fp, fs, gpass, gstop)
 
-fp = 300       #通過域端周波数[Hz]kotei
+fp = 200       #通過域端周波数[Hz]kotei
 fs = 400      #阻止域端周波数[Hz]
 gpass = 5     #通過域端最大損失[dB]
 gstop = 40      #阻止域端最小損失[dB]kotei
@@ -88,13 +89,21 @@ gstop = 40      #阻止域端最小損失[dB]kotei
 data_low = noise_delet.lowpass(data_hig, data_fs, fp, fs, gpass, gstop)
 
 #data_fpass=FC_fucntion.FpassBand_1(data,data_fs,100,800)
+
 #%%
-print(data_low)
+plt_data=data_low
+#fig,ax=plt.subplot()
 plt.figure(figsize=(6,6))
 plt.plot(data)
-plt.plot(data_low)
+plt.plot(plt_data)####
+plt.axhline(data_mean,color="r")
+plt.axhline(-1*data_mean,color="r")
+plt.axhline(2*data_st,color="g")
+plt.axhline(-2*data_st,color="g")
+plt.xlim([13800,14000])
+plt.ylim([-10000,10000])
 plt.figure(figsize=(6,6))
-p,v=FC_fucntion.fft_k(data_low, data_fs, 1000)
+p,v=FC_fucntion.fft_k(plt_data, data_fs, 1000)####
 plt.plot(v,p)
 # %%
 w = wave.Wave_write("output_data_after.wav")
@@ -104,7 +113,33 @@ w.setframerate(data_fs)
 #w.writeframes(data_std.to('cpu').detach().numpy().copy())
 #w.writeframes(data_low)
 #write("output_data_low.wav", rate=data_fs, data=data_low)
-sf.write("output_data_low.wav", data_low, data_fs)
+sf.write("output_data_low.wav", plt_data, data_fs)###
 w.close()
+
+# %%
+#フィルタ後のデータを保存できる関数save_heart_soundの使い方
+data_g=[]
+for path in df['path']:
+    data_x,data_fs=dataloder.datalode(path,4)
+    data_std=noise_delet.standard_deviation(data_x)
+    
+    fp = 90       #通過域端周波数[Hz]
+    fs = 60      #阻止域端周波数[Hz]
+    gpass = 5       #通過域端最大損失[dB]
+    gstop = 40      #阻止域端最小損失[dB]
+ 
+    data_hig = noise_delet.highpass(data_std, data_fs, fp, fs, gpass, gstop)
+
+    fp = 300       #通過域端周波数[Hz]kotei
+    fs = 1000      #阻止域端周波数[Hz]
+    gpass = 5     #通過域端最大損失[dB]
+    gstop = 40      #阻止域端最小損失[dB]kotei
+ 
+ 
+    data_low = noise_delet.lowpass(data_hig, data_fs, fp, fs, gpass, gstop)
+    data_g.append(data_low)
+
+    noise_delet.save_heart_sound(data_low,data_fs,path)
+    
 
 # %%
