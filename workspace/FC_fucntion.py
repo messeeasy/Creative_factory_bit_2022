@@ -408,9 +408,9 @@ def fft_k_N(data, samplerate, showFrequency):
     Ref: https://docs.scipy.org/doc/scipy/reference/tutorial/fftpack.html
     '''
     pcgFFT = fft(data)                                                    # FFT Full Vector
-    import matplotlib.pyplot as plt
-    plt.subplot(5,1,1)
-    plt.title('Transformada de Fourier')
+    #import matplotlib.pyplot as plt
+    #plt.subplot(5,1,1)
+    #plt.title('Transformada de Fourier')
     
     short_pcgFFT = 2.0/np.size(data) * np.abs(pcgFFT[0:np.size(data)//2]) # FFT positives values
     vTfft = np.linspace(0.0, 1.0/(2.0*(1/samplerate)), np.size(data)//2)  # Vector of frequencies (X-axes)
