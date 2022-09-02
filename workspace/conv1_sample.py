@@ -26,6 +26,8 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 import random
+import dataloder
+import noise_delet
 # %%
 print(os.name)
 if os.name=='posix':
@@ -41,66 +43,14 @@ df = pd.DataFrame.from_dict(dataset)
 df.head()
 #%%
 # Add a column to store the data read from each wavfile...   
-#%%
-def datalode(path,divide=1,delay=0):
-    Fs1, data1 = wf.read(path)
-    data2=data1[delay:(len(data1)//divide+delay)]
-    return data2,Fs1
-
 # %%
-data=[]
-for i in df['path']:
-    dataload=[]
-    datal,fsl=datalode(i)
+df['x'] = df['path'].apply(lambda x: wf.read(x)[1])
+df.head()
 
-    dataload.append(datal)
-    dataload.append(fsl)
-    data.append(dataload)
-
-del datal,fsl
-
-
-#%%
-#いつでもいろんな値が使えるように全部dfにくっつける
-#pcgc01の01はC[0]~C[1]
-#ここからすべて連結させたdfをall_dfとして扱っている。
-column='x','fs'
-#%%
-df_x=pd.DataFrame(data,columns=column)
-#%%
-all_df=pd.concat([df,df_x], axis=1)
-del df_x
-#%%
-all_df.head()
-# %% [markdown]
-# # Sample class audio plot 
-
-# %% [markdown]
-# Displaying all three kinds of audio classes normal, abnormal and extrasystole. We can see different patters in various classes.
-# 
-
-# %%
-#Choosing one of the each samples form each catogery 
-normal = all_df[all_df['label'] == 'normal' ].sample(1)
-abnormal = all_df[all_df['label'] == 'abnormal' ].sample(1)
-#extrasystole = df[df['label'] == 'extsys' ].sample(1)
-
-# Plot the three samples onto three different figures
-plt.figure(1, figsize=(10,5))
-plt.title('normal')
-plt.plot(normal['x'].values[0], c='m')
-
-plt.figure(2, figsize=(10, 5))
-plt.title('abnormal')
-plt.plot(abnormal['x'].values[0], c='c')
-
-#plt.figure(3, figsize=(10, 5))
-#plt.title('extrasystole')
-#plt.plot(extrasystole['x'].values[0], c='b')
 
 # %%
 #make the lenght of all audio files same by repeating audio file contents till its length is equal to max length audio file
-max_length = max(all_df['x'].apply(len))
+max_length = max(df['x'].apply(len))
 
 # Kaggle: What's in a heartbeat? - Peter Grenholm
 def repeat_to_length(arr, length):
@@ -115,64 +65,53 @@ def repeat_to_length(arr, length):
         result[pos:length] = arr[:length-pos]
     return result
 
-all_df['x'] = all_df['x'].apply(repeat_to_length, length=max_length)
-all_df.head()
-
-# %%
-# Collect one sample from each of the three classes and plot their waveforms
-normal = all_df[all_df['label'] == 'normal' ].sample(1)
-abnormal = all_df[all_df['label'] == 'abnormal' ].sample(1)
-#extrasystole = df[df['label'] == 'extsys' ].sample(1)
-
-plt.figure(1, figsize=(15,8))
-plt.plot(normal['x'].values[0], c='b', label='normal', alpha=0.8)
-plt.plot(abnormal['x'].values[0], c='r', label='abnormal', alpha=0.8)
-#plt.plot(extrasystole['x'].values[0], c='g', label='extrasystole', alpha=0.8)
-
-plt.title('Heartbeat waveforms overlayed onto one another')
-plt.legend(loc='lower right')
-# plt.savefig('temp.png')
-
-#%%
-fs = 4000
-f_normal, t_normal, Sxx_normal = spectrogram(normal['x'].values[0], 4000)
-plt.figure(1, figsize=(20,5))
-plt.title('Normal')
-plt.pcolormesh(t_normal, f_normal, Sxx_normal, cmap='Spectral')
-plt.ylabel('Frequency [Hz]')
-plt.xlabel('Time [sec]')
-
-f_abnormal, t_abnormal, Sxx_abnormal = spectrogram(abnormal['x'].values[0], 4000)
-plt.figure(2, figsize=(20, 5))
-plt.title('abnormal')
-plt.pcolormesh(t_abnormal, f_abnormal, Sxx_abnormal, cmap='Spectral')
-plt.ylabel('Frequency [Hz]')
-plt.xlabel('Time [sec]')
+df['x'] = df['x'].apply(repeat_to_length, length=max_length)
+df.head()
 
 #%%
 #つなげた部分pcgc01などの長さもすべて一緒にする。
 #(もしかしたらいらない)
 
 #%%
-# Put the data into numpy arrays. Most machine learning libraries use numpy arrays.
 
 """ """
-x = np.stack(all_df['x'].values, axis=0)
-y = np.stack(all_df['label'].values, axis=0)
+data=[]
+for path in df['path']:
+    data_x,data_fs=dataloder.datalode(path)
+    
+    fp = 100       #通過域端周波数[Hz]
+    fs = 70      #阻止域端周波数[Hz]
+    gpass = 5       #通過域端最大損失[dB]
+    gstop = 40      #阻止域端最小損失[dB]
+ 
+    data_hig = noise_delet.highpass(data_x, data_fs, fp, fs, gpass, gstop)
+
+    fp = 300       #通過域端周波数[Hz]kotei
+    fs = 400      #阻止域端周波数[Hz]
+    gpass = 5     #通過域端最大損失[dB]
+    gstop = 40      #阻止域端最小損失[dB]kotei
+ 
+    data_low = noise_delet.lowpass(data_hig, data_fs, fp, fs, gpass, gstop)
+    data.append(data_low)
+    print(data_low.shape)
+
+df['filter'] = data
+df['filter'] = df['filter'].apply(repeat_to_length, length=max_length)
+df.head()
+del data,data_hig,data_low
+
+#%%
+x = np.stack(df['filter'].values, axis=0)
+y = np.stack(df['label'].values, axis=0)
 
 
-""" 
-#np.hstackで連結できる。
-#今回は25Hz~240までをつなげて一つにしている。
-x=np.hstack([np.stack(all_df['pcgc01'].values, axis=0),np.stack(all_df['pcgc12'].values, axis=0),np.stack(all_df['pcgc23'].values, axis=0),np.stack(all_df['pcgc34'].values, axis=0),np.stack(all_df['pcgc45'].values, axis=0),np.stack(all_df['pcgc56'].values, axis=0)])
 
-y = np.stack(all_df['label'].values, axis=0)
-"""
+
 # %%
-x_train, x_test, y_train, y_test, train_filenames, test_filenames = train_test_split(x, y, all_df['path'].values, train_size = 0.7, test_size=0.3)
+x_train, x_test, y_train, y_test, train_filenames, test_filenames = train_test_split(x, y,df['path'].values, train_size = 0.7, test_size=0.3)
 #print("x_train: {0}, x_test: {1}".format(x_train.shape, x_test.shape))
 print(x_train)
-
+del x,y
 # %%
 clf = SVC()
 

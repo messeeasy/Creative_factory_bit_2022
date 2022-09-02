@@ -269,9 +269,14 @@ def FpassBand_1(X,Fs,H_cutoff_hz, L_cutoff_hz):
     ripple_db = 60.0
     # Compute the order and Kaiser parameter for the FIR filter.
     N, beta = kaiserord(ripple_db, width)
+    if Fs % 2==0:
+        pass_z=True
+    else:
+        pass_z=False
+
     # Use firwin with a Kaiser window to create a lowpass FIR filter.
     taps = firwin(N, L_cutoff_hz/nyq_rate, window=('kaiser', beta))
-    taps_2 = firwin(N, H_cutoff_hz/nyq_rate, pass_zero=False)
+    taps_2 = firwin(N, H_cutoff_hz/nyq_rate, pass_zero=pass_z)
     # Use lfilter to filter x with the FIR filter.
     X_l= lfilter(taps, 1.0, X)
     X_pb= lfilter(taps_2, 1.0, X_l)
