@@ -30,7 +30,7 @@ import random
 import dataloder
 import noise_delet
 import torch
-
+import k_fold
 print(os.name)
 if os.name=='posix':
     dataset = [{'path': path, 'label': path.split('/' )[3] } for path in glob.glob("../dataset_heart_sound/AV/*/*.wav")]
@@ -79,8 +79,9 @@ for path in df['path']:
 
 #%%
 data_train,data_test= train_test_split(data,train_size = 0.8, test_size=0.2)
-K=5
-data_split= list(np.array_split(data_train, K, 0))
+k=5
+data_split=k_fold.k_fold(data_train,k)
+
 #%%
 data_split[0][0].shape
 
