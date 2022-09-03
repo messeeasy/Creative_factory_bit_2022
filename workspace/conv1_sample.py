@@ -1,5 +1,6 @@
 #%%
 
+from statistics import mean
 import numpy as np
 import wave
 import pandas as pd
@@ -48,24 +49,6 @@ df['x'] = df['path'].apply(lambda x: wf.read(x)[1])
 df.head()
 
 
-# %%
-#make the lenght of all audio files same by repeating audio file contents till its length is equal to max length audio file
-
-# Kaggle: What's in a heartbeat? - Peter Grenholm
-def repeat_to_length(arr, length):
-    """Repeats the numpy 1D array to given length, and makes datatype float"""
-    result = np.empty((length, ), dtype = np.float32)
-    l = len(arr)
-    pos = 0
-    while pos + l <= length:
-        result[pos:pos+l] = arr
-        pos += l
-    if pos < length:
-        result[pos:length] = arr[:length-pos]
-    return result
-
-
-
 #%%
 #つなげた部分pcgc01などの長さもすべて一緒にする。
 #(もしかしたらいらない)
@@ -74,9 +57,11 @@ def repeat_to_length(arr, length):
 
 """ """
 data=[]
+
 for path in df['path']:
-    data_x,data_fs=dataloder.datalode(path,4)
-    data_std,me,st=noise_delet.standard_deviation(data_x,3)
+    data_x,data_fs=dataloder.datalode(path,5)
+
+    data_std,me,st=noise_delet.standard_deviation(data_x,2)
     
     fp = 90       #通過域端周波数[Hz]
     fs = 60      #阻止域端周波数[Hz]
@@ -86,22 +71,22 @@ for path in df['path']:
     data_hig = noise_delet.highpass(data_std, data_fs, fp, fs, gpass, gstop)
 
     fp = 300       #通過域端周波数[Hz]kotei
-    fs = 400      #阻止域端周波数[Hz]
+    fs = 1000      #阻止域端周波数[Hz]
     gpass = 5     #通過域端最大損失[dB]
     gstop = 40      #阻止域端最小損失[dB]kotei
  
  
-    data_low = noise_delet.lowpass(data_hig, data_fs, fp, fs, gpass, gstop)
-    data.append(data_low)
+    data_low = noise_delet.lowpass(data_std, data_fs, fp, fs, gpass, gstop)
+    data.append(data_x)
+    noise_delet.save_heart_sound(data_x,data_fs,path)
     #print(data_low.shape)
 #%%
 df['filter'] = data
 #%
 #%%
-
 max_length = max(df['filter'].apply(len))
 #print(max_length)
-df['filter'] = df['filter'].apply(repeat_to_length, length=max_length)
+df['filter'] = df['filter'].apply(dataloder.repeat_to_length, length=max_length)
 df.head()
 
 
