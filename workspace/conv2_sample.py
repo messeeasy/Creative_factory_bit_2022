@@ -177,56 +177,47 @@ trainloader = torch.utils.data.DataLoader(train_dataset, batch_size = BATCH_SIZE
 testloader = torch.utils.data.DataLoader(test_dataset, batch_size = BATCH_SIZE,
                         shuffle = False, num_workers = 0) #Windows Osの方はnum_workers=1 または 0が良いかも
 # %%
-class CNN(nn.Module):
-    def __init__(self):
-        super(CNN, self).__init__()
-        
-        """ """
-        fillter_num = 16
-        fillter_W=10
-        pool_W=3
-        stride_conv=1
-        stride_pool=1
-        conv_num=2
-        ow=100#Wの初期化です。
-        self.conv1 = nn.Conv2d(10,fillter_num,(1,fillter_W),stride=stride_conv)
-        #  *conv_numは要件等
-        self.conv2 = nn.Conv2d(fillter_num,fillter_num*conv_num,(1,fillter_W),stride=stride_conv)
-        
-        """ 
-        self.conv1 = nn.Conv2d(10,16,6)
-        self.conv2 = nn.Conv2d(16,320,6)
-        """
-        self.relu = nn.ReLU()
-        self.pool = nn.MaxPool2d((1,pool_W),stride=stride_pool)
-        
-        for i in range(1,conv_num):
-            ow=int((ow-fillter_num*conv_num)/stride_conv+1)
-            ow=ow-pool_W+1
-        #self.fc1 = nn.Linear(fillter_num*conv_num * 1 * ow, 100)
-        self.fc1 = nn.Linear(32* 1 * 78, 100)
-        self.fc2 = nn.Linear(100, 2)
+class CNN_conv2D(nn.Module):
+    def __init__(self, in_channel, filter_num, filter_size, strides, pool_strides, dropout_para):
+        super(CNN_conv2D, self).__init__()
+        self.model = nn.Sequential(
 
+            nn.Conv2d(in_channel, filter_num[0], (1,filter_size[0]), stride=strides[0]),
+            nn.ReLU(),
+            nn.MaxPool2d((1,filter_size[0]), pool_strides[0]),
+            nn.BatchNorm2d(filter_num[0]),
+            nn.Conv1d(filter_num[0], filter_num[1], (1,filter_size[1]), stride=strides[1]),
+            nn.ReLU(),
+            nn.MaxPool2d((1,filter_size[1]), pool_strides[1]),
+            nn.BatchNorm2d(filter_num[1]),
+            nn.Conv2d(filter_num[1], filter_num[2], (1,filter_size[2]), stride=strides[2]),
+            nn.ReLU(),
+            nn.MaxPool2d((1,filter_size[2]), pool_strides[2]),
+            nn.BatchNorm2d(filter_num[2]),
+            nn.Conv2d(filter_num[2], filter_num[3], (1,filter_size[3]), stride=strides[3]),
+            nn.ReLU(),
+            nn.MaxPool2d((1, filter_size[3]), pool_strides[3]),
+            nn.BatchNorm2d(filter_num[3]),
+            nn.Dropout(dropout_para[0]),
+            nn.Conv2d(filter_num[3], filter_num[4], (1,filter_size[4]), stride=strides[4]),
+            nn.ReLU(),
+            nn.MaxPool2d((1,filter_size[4]), pool_strides[4]),
+            nn.BatchNorm2d(filter_num[4]),
+            nn.Dropout(dropout_para[1]),
+            nn.Conv2d(filter_num[4], filter_num[5], (1,filter_size[5]), stride=strides[5]),
+            nn.ReLU(),
+            nn.MaxPool2d((1,filter_size[5]), pool_strides[5]),
+            nn.BatchNorm2d(filter_num[5]),
+            nn.Dropout(dropout_para[2]),
+            nn.AdaptiveAvgPool2d((1,1)),
+            torch.flatten(),
+            nn.Linear(filter_num[5],2),
+            nn.Sigmoid()
+
+        )
 
     def forward(self, x):
-        #print(x.shape)
-        x = self.conv1(x)
-        #print(x.shape)
-        x = self.relu(x)
-        #print(x.shape)
-        x = self.pool(x)
-        #print(x.shape)
-        x = self.conv2(x)
-        #print(x.shape)
-        x = self.relu(x)
-        #print(x.shape)
-        x = self.pool(x)
-        #print(x.shape)
-        x = x.view(x.size()[0], -1)
-        #print(x.shape)
-        x = self.fc1(x)
-        x = self.relu(x)
-        x = self.fc2(x)
+        x = self.model(x)
         return x
 #%%
 import torch.optim as optim
