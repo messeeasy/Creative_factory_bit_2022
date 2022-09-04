@@ -56,7 +56,7 @@ data=[]
 list_fs=[]
 for path in df['path']:
     data_x,data_fs=data_arrange.datalode(path,5)
-
+    print(data_fs)
     #data_std,me,st=noise_delet.standard_deviation(data_x,2)
     
     fp = 90       #通過域端周波数[Hz]
@@ -79,11 +79,20 @@ for path in df['path']:
     #print(data_low.shape)
 
 #%%
-data_train,data_test= train_test_split(data,train_size = 0.8, test_size=0.2)
+data_train,data_test,list_fs_train,list_fs_test= train_test_split(data,list_fs,train_size = 0.8, test_size=0.2)
 k=5
 data_split=k_fold.k_fold(data_train,k)
+#%%
+print(list_fs)
 
 #%%
-data_split[0][0].shape
+def data_L_split(data,L=10000):
+
+    return
+#%%
+for data_s in data_split:
+    print(data_s.shape)
+    data_L_split(data_s,list_fs)
+
 
 # %%
