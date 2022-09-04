@@ -36,7 +36,7 @@ class CNN_conv1D(nn.Module):
             nn.BatchNorm1d(filter_num[5]),
             nn.Dropout(dropout_para[2]),
             nn.AdaptiveAvgPool1d(1),
-            torch.flatten(),
+            nn.Flatten(),
             nn.Linear(filter_num[5],2),
             nn.Sigmoid()
 
@@ -56,7 +56,7 @@ class CNN_conv2D(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d((1,filter_size[0]), pool_strides[0]),
             nn.BatchNorm2d(filter_num[0]),
-            nn.Conv1d(filter_num[0], filter_num[1], (1,filter_size[1]), stride=strides[1]),
+            nn.Conv2d(filter_num[0], filter_num[1], (1,filter_size[1]), stride=strides[1]),
             nn.ReLU(),
             nn.MaxPool2d((1,filter_size[1]), pool_strides[1]),
             nn.BatchNorm2d(filter_num[1]),
@@ -80,7 +80,7 @@ class CNN_conv2D(nn.Module):
             nn.BatchNorm2d(filter_num[5]),
             nn.Dropout(dropout_para[2]),
             nn.AdaptiveAvgPool2d((1,1)),
-            torch.flatten(),
+            nn.Flatten(),
             nn.Linear(filter_num[5],2),
             nn.Sigmoid()
 

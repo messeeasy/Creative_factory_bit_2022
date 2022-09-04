@@ -158,11 +158,11 @@ y = torch.tensor(y, dtype=torch.float32)
 x=x[:,:,np.newaxis,:]
 x = torch.FloatTensor(x)
 y = torch.LongTensor(y)
-#%%
-del x,y
+
 #%%
 x_train, x_test, y_train, y_test, train_filenames, test_filenames = train_test_split(x, y, all_df['path'].values, train_size = 0.7, test_size=0.3)
 #print("x_train: {0}, x_test: {1}".format(x_train.shape, x_test.shape))
+del x,y
 
 #%%
 train_dataset = torch.utils.data.TensorDataset(x_train, y_train)
@@ -181,12 +181,12 @@ class CNN_conv2D(nn.Module):
     def __init__(self, in_channel, filter_num, filter_size, strides, pool_strides, dropout_para):
         super(CNN_conv2D, self).__init__()
         self.model = nn.Sequential(
-
+            
             nn.Conv2d(in_channel, filter_num[0], (1,filter_size[0]), stride=strides[0]),
             nn.ReLU(),
             nn.MaxPool2d((1,filter_size[0]), pool_strides[0]),
             nn.BatchNorm2d(filter_num[0]),
-            nn.Conv1d(filter_num[0], filter_num[1], (1,filter_size[1]), stride=strides[1]),
+            nn.Conv2d(filter_num[0], filter_num[1], (1,filter_size[1]), stride=strides[1]),
             nn.ReLU(),
             nn.MaxPool2d((1,filter_size[1]), pool_strides[1]),
             nn.BatchNorm2d(filter_num[1]),
@@ -210,7 +210,7 @@ class CNN_conv2D(nn.Module):
             nn.BatchNorm2d(filter_num[5]),
             nn.Dropout(dropout_para[2]),
             nn.AdaptiveAvgPool2d((1,1)),
-            torch.flatten(),
+            nn.Flatten(),
             nn.Linear(filter_num[5],2),
             nn.Sigmoid()
 
@@ -221,13 +221,20 @@ class CNN_conv2D(nn.Module):
         return x
 #%%
 import torch.optim as optim
+filter_num = [16, 16, 16, 32, 32, 32]
+filter_size = [4,8,8,8,12,12]
+strides = [1,1,1,1,1,1]
+pool_strides = [1,1,1,1,1,1]
+dropout_para = [0.2,0.2,0.2]
+
 device = torch.device("cuda:0")
-net = CNN()
+net = CNN_conv2D(10, filter_num, filter_size, strides, pool_strides, dropout_para)
 net = net.to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(net.parameters(), lr=LEARNING_RATE)#, weight_decay=WEIGHT_DECAY)
 #optimizer = optim.SGD(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=WEIGHT_DECAY)
 
+print(x_train.shape)
 
 #%%
 print(net)
