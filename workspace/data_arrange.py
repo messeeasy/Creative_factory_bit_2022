@@ -17,3 +17,25 @@ def repeat_to_length(arr, length):
     if pos < length:
         result[pos:length] = arr[:length-pos]
     return result
+
+def L_split_process(data,L=10000):
+    data_L_split=[]
+    split_num=[]
+
+    for data_x in data:
+        
+        num=len(data_x)//L
+        split_num.append(num)
+        print(len(data_x),num)
+        for i in range(num-1):
+            data_L_split.append(data_x[i*L:(i+1)*L])
+    return  data_L_split,split_num
+def L_split(data,L=10000):
+    data_L_split=[]
+    split_num=[]
+    for data_s in data:
+
+        data_L,split_n=L_split_process(data_s,L)
+        data_L_split.append(np.array(data_L))
+        split_num.append(split_n)
+    return data_L_split,split_num

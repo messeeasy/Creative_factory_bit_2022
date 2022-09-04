@@ -53,7 +53,6 @@ df.head()
 
 """ """
 data=[]
-list_fs=[]
 for path in df['path']:
     data_x,data_fs=data_arrange.datalode(path,5)
 
@@ -74,7 +73,6 @@ for path in df['path']:
  
     #data_low = noise_delet.lowpass(data_std, data_fs, fp, fs, gpass, gstop)
     data.append(data_x)
-    list_fs.append(data_fs)
     noise_delet.save_heart_sound(data_x,data_fs,path)
     #print(data_low.shape)
 
