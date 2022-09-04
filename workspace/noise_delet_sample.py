@@ -28,7 +28,7 @@ import torch
 import torch.nn as nn
 import noise_delet
 from scipy import signal
-import dataloder
+import data_arrange
 
 
 from scipy.io.wavfile import read, write
@@ -53,7 +53,7 @@ df
 print(df['path'][0])
 breath=R"../dataset_heart_sound/AV/abnormal/68175_AV.wav"
 #data,data_fs=dataloder.datalode(df['path'][0])
-data,data_fs=dataloder.datalode(breath)
+data,data_fs=data_arrange.datalode(breath)
 print(data)
 print(len(data))
 print(data.shape)

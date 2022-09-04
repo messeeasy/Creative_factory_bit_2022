@@ -54,8 +54,7 @@ df.head()
 """ """
 data=[]
 for path in df['path']:
-    data_x,data_fs=data_arrange.datalode(path,5)
-
+    data_x,data_fs=data_arrange.datalode(path)
     #data_std,me,st=noise_delet.standard_deviation(data_x,2)
     
     fp = 90       #通過域端周波数[Hz]
@@ -73,15 +72,23 @@ for path in df['path']:
  
     #data_low = noise_delet.lowpass(data_std, data_fs, fp, fs, gpass, gstop)
     data.append(data_x)
-    noise_delet.save_heart_sound(data_x,data_fs,path)
+    #noise_delet.save_heart_sound(data_x,data_fs,path)
     #print(data_low.shape)
 
 #%%
 data_train,data_test= train_test_split(data,train_size = 0.8, test_size=0.2)
 k=5
-data_split=k_fold.k_fold(data_train,k)
+data_K_split=k_fold.k_fold(data_train,k)
+#%%
+print(data_K_split[0].shape)
 
 #%%
-data_split[0][0].shape
+L=10000
+
+data_L_split,split_num=data_arrange.L_split(data_K_split,L)
+
+
+# %%
+print(data_L_split[4].shape)
 
 # %%
