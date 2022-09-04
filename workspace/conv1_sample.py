@@ -27,7 +27,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 import random
-import dataloder
+import data_arrange
 import noise_delet
 # %%
 print(os.name)
@@ -59,7 +59,7 @@ df.head()
 data=[]
 
 for path in df['path']:
-    data_x,data_fs=dataloder.datalode(path,5)
+    data_x,data_fs=data_arrange.datalode(path,5)
 
     data_std,me,st=noise_delet.standard_deviation(data_x,2)
     
@@ -86,7 +86,7 @@ df['filter'] = data
 #%%
 max_length = max(df['filter'].apply(len))
 #print(max_length)
-df['filter'] = df['filter'].apply(dataloder.repeat_to_length, length=max_length)
+df['filter'] = df['filter'].apply(data_arrange.repeat_to_length, length=max_length)
 df.head()
 
 
