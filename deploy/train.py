@@ -41,7 +41,8 @@ def model_setting_LSTM(model, input_size, output_size, hidden_size, hidden_size2
 # model選択とここだけ呼び出せば良い
 def training(net, lr, epoch, train_loader, val_loader, device):
     
-    criterion = nn.BCEWithLogitsLoss()
+    #criterion = nn.BCEWithLogitsLoss()
+    criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(net.parameters(), lr= lr)
     
     history =  np.zeros((0,5))

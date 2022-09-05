@@ -203,9 +203,9 @@ net = train.model_setting_cnn(model, in_channel, filter_num, filter_size, stride
 history, net = train.training(net, lr, epoch, train_loader, val_loader, device)
 
 print(x_train.shape)
+print(x_test.shape)
 
 #%%
-print(net)
-
 now = plot.evaluate_history(history)
 plot.test_result(net, test_loader, now, device)
+# %%

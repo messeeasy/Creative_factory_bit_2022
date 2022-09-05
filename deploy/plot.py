@@ -1,4 +1,5 @@
 # 学習ログ解析
+from cProfile import label
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -6,36 +7,39 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 import pandas as pd
 import datetime
+import torch
+from sklearn.metrics import roc_curve
+from sklearn.metrics import roc_auc_score
 
 def evaluate_history(history):
-    #損失と精度の確認
-    print(f'初期状態: 損失: {history[0,3]:.5f} 精度: {history[0,4]:.5f}') 
-    print(f'最終状態: 損失: {history[-1,3]:.5f} 精度: {history[-1,4]:.5f}' )
+    #lossとaccuracyの確認
+    print(f'First state: loss: {history[0,3]:.5f} accuracy: {history[0,4]:.5f}') 
+    print(f'Final state: loss: {history[-1,3]:.5f} accuracy: {history[-1,4]:.5f}' )
 
     num_epochs = len(history)
     unit = num_epochs / 10
 
-    # 学習曲線の表示 (損失)
+    # Learning Curveの表示 (loss)
     plt.figure(figsize=(9,8))
-    plt.plot(history[:,0], history[:,1], 'b', label='訓練')
-    plt.plot(history[:,0], history[:,3], 'k', label='検証')
+    plt.plot(history[:,0], history[:,1], 'b', label='Train')
+    plt.plot(history[:,0], history[:,3], 'k', label='Val')
     plt.xticks(np.arange(0,num_epochs+1, unit))
-    plt.xlabel('繰り返し回数')
-    plt.ylabel('損失')
-    plt.title('学習曲線(損失)')
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
+    plt.title('Learning Curve(loss)')
     plt.legend()
     now = datetime.datetime.now()
     filename = './output/loss_' + now.strftime('%Y%m%d_%H%M%S') + '.png'
     plt.savefig(filename)
 
-    # 学習曲線の表示 (精度)
+    # Learning Curveの表示 (accuracy)
     plt.figure(figsize=(9,8))
-    plt.plot(history[:,0], history[:,2], 'b', label='訓練')
-    plt.plot(history[:,0], history[:,4], 'k', label='検証')
+    plt.plot(history[:,0], history[:,2], 'b', label='Train')
+    plt.plot(history[:,0], history[:,4], 'k', label='Val')
     plt.xticks(np.arange(0,num_epochs+1,unit))
-    plt.xlabel('繰り返し回数')
-    plt.ylabel('精度')
-    plt.title('学習曲線(精度)')
+    plt.xlabel('epoch')
+    plt.ylabel('accuracy')
+    plt.title('Learning Curve(accuracy)')
     plt.legend()
     filename = './output/accuracy_' + now.strftime('%Y%m%d_%H%M%S') + '.png'
     plt.savefig(filename)
@@ -43,23 +47,39 @@ def evaluate_history(history):
     return now
     
 def test_result(net, test_loader, now, device):
-    # テストデータでの検証
+    # テストデータでのVal
     label_list = []
     pred_list = []
+    pred_score = []
     
     for (inputs, labels) in test_loader:
-        # 正しいか不明
         inputs = inputs.to(device)
         labels = labels.numpy().tolist()
-        pred = net(inputs).max(1).gpu().numpy().tolist()
+        pred = torch.argmax(net(inputs),axis = 1).cpu().numpy().tolist()
+        #pred_s = torch.max(net(inputs),dim = 1).values.item()
         label_list += labels
         pred_list += pred
-        
-    print(accuracy_score(label_list, pred_list))
+        #pred_score.append(pred_s)
     
-    # あとで、感度・特異度になるように入れ替える
-    tag = ['abnormal', 'normal']
-    cm = confusion_matrix(label_list, pred_list, labels = tag)
+    print(len(test_loader))
+    
+    tag = ['normal', 'abnormal']
+    label_tag = []
+    pred_tag = []
+    
+    for label in label_list:
+        if label == 0:
+            label_tag.append('abnormal')
+        else:
+            label_tag.append('normal')
+            
+    for pred in pred_list:
+        if pred == 0:
+            pred_tag.append('abnormal')
+        else:
+            pred_tag.append('normal')
+    
+    cm = confusion_matrix(label_tag, pred_tag, labels = tag)
     df_cm = pd.DataFrame(cm, index=tag, columns=tag)
     plt.figure(figsize=(12, 9))
     sns.heatmap(df_cm, annot=True, cbar=False, square=True, fmt="d")
@@ -67,4 +87,27 @@ def test_result(net, test_loader, now, device):
     plt.ylabel("Test labels")
     plt.title("Confusion matrix")
     filename = './output/test_confusion_' + now.strftime('%Y%m%d_%H%M%S') + '.png'
-    plt.show(filename)
+    plt.savefig(filename)
+    
+    print(net(inputs).size())
+    print(len(label_list))
+    print(len(pred_score))
+
+    return 0
+"""
+    fpr_all, tpr_all, thresholds_all = roc_curve(label_list, pred_score, drop_intermediate=False)
+    
+    plt.plot(fpr_all, tpr_all, marker='o')
+    plt.xlabel('FPR: False positive rate')
+    plt.ylabel('TPR: True positive rate')
+    plt.title("ROC curve")
+    plt.grid()
+    filename = './output/ROCcurve_' + now.strftime('%Y%m%d_%H%M%S') + '.png'
+    plt.savefig(filename)
+    
+    # あとで、テキストに出力する
+    print('---- AUC score ----')
+    print(roc_auc_score(label_list, pred_score))
+"""
+
+    # しきい値で変化させる
