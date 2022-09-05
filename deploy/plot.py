@@ -56,10 +56,10 @@ def test_result(net, test_loader, now, device):
         inputs = inputs.to(device)
         labels = labels.numpy().tolist()
         pred = torch.argmax(net(inputs),axis = 1).cpu().numpy().tolist()
-        #pred_s = torch.max(net(inputs),dim = 1).values.item()
+        pred_s = torch.max(net(inputs),dim = 1).values.tolist()
         label_list += labels
         pred_list += pred
-        #pred_score.append(pred_s)
+        pred_score += pred_s
     
     print(len(test_loader))
     
@@ -93,10 +93,9 @@ def test_result(net, test_loader, now, device):
     print(len(label_list))
     print(len(pred_score))
 
-    return 0
-"""
+
     fpr_all, tpr_all, thresholds_all = roc_curve(label_list, pred_score, drop_intermediate=False)
-    
+    plt.figure(figsize=(12, 9))
     plt.plot(fpr_all, tpr_all, marker='o')
     plt.xlabel('FPR: False positive rate')
     plt.ylabel('TPR: True positive rate')
@@ -108,6 +107,6 @@ def test_result(net, test_loader, now, device):
     # あとで、テキストに出力する
     print('---- AUC score ----')
     print(roc_auc_score(label_list, pred_score))
-"""
-
+    
+    return 0
     # しきい値で変化させる

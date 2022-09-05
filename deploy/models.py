@@ -80,8 +80,7 @@ class CNN_conv2D(nn.Module):
             nn.Dropout(dropout_para[2]),
             nn.AdaptiveAvgPool2d((1,1)),
             nn.Flatten(),
-            nn.Linear(filter_num[5],2),
-            nn.Sigmoid()
+            nn.Linear(filter_num[5],2)
         )
 
     def forward(self, x):

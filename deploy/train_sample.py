@@ -30,7 +30,7 @@ import plot
 
 #%%
 EPOCH = 100
-BATCH_SIZE=20
+BATCH_SIZE=30
 #WEIGHT_DECAY = 0.1
 LEARNING_RATE = 0.5
 #%%
@@ -204,6 +204,7 @@ history, net = train.training(net, lr, epoch, train_loader, val_loader, device)
 
 print(x_train.shape)
 print(x_test.shape)
+print(net)
 
 #%%
 now = plot.evaluate_history(history)
