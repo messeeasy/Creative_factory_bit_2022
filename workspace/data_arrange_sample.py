@@ -61,15 +61,15 @@ for path in df['path']:
     fs = 60      #阻止域端周波数[Hz]
     gpass = 5       #通過域端最大損失[dB]
     gstop = 40      #阻止域端最小損失[dB]
- 
+
     #data_hig = noise_delet.highpass(data_std, data_fs, fp, fs, gpass, gstop)
 
     fp = 300       #通過域端周波数[Hz]kotei
     fs = 1000      #阻止域端周波数[Hz]
     gpass = 5     #通過域端最大損失[dB]
     gstop = 40      #阻止域端最小損失[dB]kotei
- 
- 
+
+
     #data_low = noise_delet.lowpass(data_std, data_fs, fp, fs, gpass, gstop)
     data.append(data_x)
     #noise_delet.save_heart_sound(data_x,data_fs,path)

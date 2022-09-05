@@ -37,8 +37,7 @@ class CNN_conv1D(nn.Module):
             nn.Dropout(dropout_para[2]),
             nn.AdaptiveAvgPool1d(1),
             nn.Flatten(),
-            nn.Linear(filter_num[5],2),
-            nn.Sigmoid()
+            nn.Linear(filter_num[5],2)
 
         )
 
@@ -81,8 +80,7 @@ class CNN_conv2D(nn.Module):
             nn.Dropout(dropout_para[2]),
             nn.AdaptiveAvgPool2d((1,1)),
             nn.Flatten(),
-            nn.Linear(filter_num[5],2),
-            nn.Sigmoid()
+            nn.Linear(filter_num[5],2)
 
         )
 
@@ -107,7 +105,7 @@ class LSTM_conv1D(nn.Module):
         self.relu = nn.ReLU()
         self.drop = nn.Dropout(dropout)
         self.fc2 = nn.Linear(hidden_size2, output_size)
-        self.Sigmoid()
+
         nn.init.xavier_normal_(self.rnn.weight_ih_l0)
         nn.init.orthogonal_(self.rnn.weight_hh_l0)
         
@@ -117,7 +115,6 @@ class LSTM_conv1D(nn.Module):
         x = self.relu(x)
         x = self.drop(x)
         x = self.fc2(x)
-        x = self.Sigmoid(x)
         
         return x
         
