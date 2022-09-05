@@ -61,7 +61,6 @@ def test_result(net, test_loader, now, device):
         pred_list += pred
         pred_score += pred_s
     
-    print(len(test_loader))
     
     tag = ['normal', 'abnormal']
     label_tag = []
@@ -89,9 +88,6 @@ def test_result(net, test_loader, now, device):
     filename = './output/test_confusion_' + now.strftime('%Y%m%d_%H%M%S') + '.png'
     plt.savefig(filename)
     
-    print(net(inputs).size())
-    print(len(label_list))
-    print(len(pred_score))
 
 
     fpr_all, tpr_all, thresholds_all = roc_curve(label_list, pred_score, drop_intermediate=False)
@@ -108,5 +104,5 @@ def test_result(net, test_loader, now, device):
     print('---- AUC score ----')
     print(roc_auc_score(label_list, pred_score))
     
-    return 0
+    return
     # しきい値で変化させる
