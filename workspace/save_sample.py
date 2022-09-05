@@ -125,7 +125,6 @@ data_L_split[0][1]
 #%%
 #train or test
 noise_delet.sava_Lsplit_heart_sound(data_L_split,split_num,L,4000,data_train_path,"train")
-#%%
 noise_delet.sava_Lsplit_heart_sound(data_test,split_num,L,4000,data_test_path,"test")
 
 

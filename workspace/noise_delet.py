@@ -55,26 +55,28 @@ def save_heart_sound(data,data_fs,path):
 
         sf.write(os.path.join(file,name_wav),data, data_fs)
 
-def save_heart_sound_train(data,data_fs,L,path,train_test,num):
+def save_heart_sound_train(data,data_fs,L,path,train_test,K,K_num,num):
     
     hd,name_wav=os.path.split(path)
     hd2,filename=os.path.split(hd)#filename    abnormal,normal
 
     basename_without_ext = os.path.splitext(os.path.basename(name_wav))[0]
-    file=os.path.join(hd2+"_"+str(L)+"_filter",train_test)
+    file=os.path.join(hd2+"_K"+str(K)+"_filter",train_test)
     
     if not os.path.exists(file):
         os.makedirs(file)
-    
-    sf.write(os.path.join(file,filename+"_"+basename_without_ext+"_"+str(num)+".wav"),data, data_fs)
+    file2=os.path.join(file,"train_"+str(K_num))
+    if not os.path.exists(file2):
+        os.makedirs(file2)
+    sf.write(os.path.join(file2,filename+"_"+basename_without_ext+"_L"+str(L)+"_"+str(num)+".wav"),data, data_fs)
 
-def save_heart_sound_test(data,data_fs,L,path,train_test):
+def save_heart_sound_test(data,data_fs,L,path,train_test,K):
     
     hd,name_wav=os.path.split(path)
     hd2,filename=os.path.split(hd)#filename    abnormal,normal
 
     basename_without_ext = os.path.splitext(os.path.basename(name_wav))[0]
-    file=os.path.join(hd2+"_"+str(L)+"_filter",train_test)
+    file=os.path.join(hd2+"_K"+str(K)+"_filter",train_test)
     
     if not os.path.exists(file):
         os.makedirs(file)
@@ -103,7 +105,7 @@ def sava_Lsplit_heart_sound(data_L,split_num,L,data_fs,data_path,train_test):
                     #print(path)
                     data_x=data_L[i][data_count]
                     #print(data_count)
-                    save_heart_sound_train(data_x,data_fs,L,path,train_test,k)
+                    save_heart_sound_train(data_x,data_fs,L,path,train_test,len(split_num),i,k)
                     data_count+=1
                 
                 path_count+=1
@@ -111,7 +113,7 @@ def sava_Lsplit_heart_sound(data_L,split_num,L,data_fs,data_path,train_test):
     elif train_test=='test':
         path_count=0
         for data_x in data_L:
-            save_heart_sound_test(data_x,data_fs,L,data_path[path_count],train_test)
+            save_heart_sound_test(data_x,data_fs,L,data_path[path_count],train_test,len(split_num))
             path_count+=1
 
 
