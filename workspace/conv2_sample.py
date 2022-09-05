@@ -221,6 +221,8 @@ class CNN_conv2D(nn.Module):
         return x
 #%%
 import torch.optim as optim
+
+in_channel = 10
 filter_num = [16, 16, 16, 32, 32, 32]
 filter_size = [4,8,8,8,12,12]
 strides = [1,1,1,1,1,1]
@@ -228,7 +230,7 @@ pool_strides = [1,1,1,1,1,1]
 dropout_para = [0.2,0.2,0.2]
 
 device = torch.device("cuda:0")
-net = CNN_conv2D(10, filter_num, filter_size, strides, pool_strides, dropout_para)
+net = CNN_conv2D(in_channel, filter_num, filter_size, strides, pool_strides, dropout_para)
 net = net.to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(net.parameters(), lr=LEARNING_RATE)#, weight_decay=WEIGHT_DECAY)
