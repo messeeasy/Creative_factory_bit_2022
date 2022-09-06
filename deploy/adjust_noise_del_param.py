@@ -25,6 +25,9 @@ import random
 
 import torch
 import torch.nn as nn
+import k_fold
+import noise_delet
+import data_arrange
 import train
 import plot
 
@@ -49,12 +52,15 @@ df.head()
 df['x'] = df['path'].apply(lambda x: wf.read(x)[1])
 df.head()
 
+# --------------------------------------- 周波数変換　ここから変えた -------------------------------------------------
 #ppf1ファイルのE_VS関数からHzごとに分けられた情報を入手する。
-def get_PCG(path,PCG_list):
-    Fs1, data1 = wf.read(path)
-    data2=data1[400:(len(data1)//5+400)]
-    data2 = FC_fucntion.vec_nor(np.array(data2))
-    pcgFFT1, vTfft1 = FC_fucntion.fft_k_N(data2, Fs1, 2000)
+def get_PCG_noise_del(data, data_fs):
+    #Fs1, data1 = wf.read(path) # data_arrange.datalode
+    #data2=data1[400:(len(data1)//5+400)] # data_arrange.datalode(path, 5, 400)
+    
+    
+    data = FC_fucntion.vec_nor(data)
+    pcgFFT1, vTfft1 = FC_fucntion.fft_k_N(data, data_fs, 2000)
 
     E_PCG,C = FC_fucntion.E_VS_100(pcgFFT1, vTfft1, 'percentage')
     
@@ -67,23 +73,43 @@ def get_PCG(path,PCG_list):
         kari_list.append(vTfft1[C[i]:C[i+1]])
         kari_list.append(pcgFFT1[C[i]:C[i+1]])
     #kari_list.append(1)
-    PCG_list.append(kari_list)
+    return kari_list
 
 #%%
-PCG=[]
+
+# ------------------ noise del hyper param ---------------------
+std_scale = 2
+fp_l = 300       #通過域端周波数[Hz]kotei
+fs_l = 1000      #阻止域端周波数[Hz]
+gpass_l = 5     #通過域端最大損失[dB]
+gstop_l = 40      #阻止域端最小損失[dB]kotei
+#L=10000
+# ----------------------------------------------------------------
+dataset_all = []
+
 for path in df['path']:
-    get_PCG(path,PCG)
-print(str(np.shape(PCG)))
+    data,data_fs=data_arrange.datalode(path)
+    data,me,st=noise_delet.standard_deviation(data,std_scale)
+    data = noise_delet.lowpass(data, data_fs, fp_l[i], fs_l[i], gpass_l[i], gstop_l[i])
+    # 周波数変換コード　使わないとき除く
+    data = get_PCG_noise_del(data, data_fs)
+    dataset_all.append(data)
+
+#dataset_all,split_num=data_arrange.L_split(dataset_all,L)
+#%%
+print(str(np.shape(dataset_all)))
+print(str(np.shape(data)))
 #%%
 #いつでもいろんな値が使えるように全部dfにくっつける
 #pcgc01の01はC[0]~C[1]
 #ここからすべて連結させたdfをall_dfとして扱っている。
 column='vT_all','pcg_all','vtc01','pcgc01','vtc12','pcgc12','vtc23','pcgc23','vtc34','pcgc34','vtc45','pcgc45','vtc56','pcgc56','vtc67','pcgc67','vtc78','pcgc78','vtc89','pcgc89','vtc910','pcgc910',
 #%%
-df_PCG=pd.DataFrame(PCG,columns=column)
+df_PCG=pd.DataFrame(dataset_all,columns=column)
 #%%
 all_df=pd.concat([df,df_PCG], axis=1)
-del PCG
+del dataset_all
+# -----------------------------------------------------------------------------------------
 #%%
 all_df.head()
 #%%
@@ -183,7 +209,7 @@ testloader = torch.utils.data.DataLoader(test_dataset, batch_size = BATCH_SIZE,
 
 
 #%% 
-# ------------------------- hyper param -----------------------------
+# ------------------------- model hyper param -----------------------------
 model = 'CNN_conv2D'
 in_channel = 10
 filter_num = [4, 4, 6, 6, 8, 8]
@@ -196,7 +222,7 @@ epoch = 100
 train_loader = trainloader
 val_loader = testloader # 本来はTrainの中のK個のうちのどれか
 test_loader = testloader
-# -------------------------------------------------------------------
+# -------------------------------------------------------------------------
 
 device = torch.device("cuda:0")
 net = train.model_setting_cnn(model, in_channel, filter_num, filter_size, strides, pool_strides, dropout_para, device)
