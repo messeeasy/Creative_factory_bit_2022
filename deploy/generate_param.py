@@ -9,12 +9,17 @@ gstop_l = 40      #阻止域端最小損失[dB]kotei
 #%%
 import numpy as np
 import itertools
-std_scale = [value for value in np.arange(3, 7, 1)]
-fp_l = [value for value in np.arange(100, 1000, 200)]
+std_scale = [value for value in np.arange(3, 6, 1)]
+fp_l = [value for value in np.arange(100, 700, 200)]
 fs_l = [value for value in np.arange(200, 800, 200)]
 gpass_l = [value for value in np.arange(5, 6, 1)]
 gstop_l = [value for value in np.arange(40, 50, 10)]
+print(std_scale)
+print(fp_l)
+print(fs_l)
 print(gpass_l)
+print(gstop_l)
+
 # %%
 param = list(itertools.product(std_scale, fp_l, fs_l, gpass_l, gstop_l))
 print(len(param))

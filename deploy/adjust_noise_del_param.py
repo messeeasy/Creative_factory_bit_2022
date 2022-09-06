@@ -106,23 +106,23 @@ for param in param_noise:
         dataset_all.append(data)
 
     #dataset_all,split_num=data_arrange.L_split(dataset_all,L)
-    #%%
+    
     print(str(np.shape(dataset_all)))
     print(str(np.shape(data)))
-    #%%
+    
     #いつでもいろんな値が使えるように全部dfにくっつける
     #pcgc01の01はC[0]~C[1]
     #ここからすべて連結させたdfをall_dfとして扱っている。
     column='vT_all','pcg_all','vtc01','pcgc01','vtc12','pcgc12','vtc23','pcgc23','vtc34','pcgc34','vtc45','pcgc45','vtc56','pcgc56','vtc67','pcgc67','vtc78','pcgc78','vtc89','pcgc89','vtc910','pcgc910',
-    #%%
+    
     df_PCG=pd.DataFrame(dataset_all,columns=column)
-    #%%
+    
     all_df=pd.concat([df,df_PCG], axis=1)
     del dataset_all
     # -----------------------------------------------------------------------------------------
-    #%%
+    
     all_df.head()
-    #%%
+    
     def repeat_to_length(arr, length):
         """Repeats the numpy 1D array to given length, and makes datatype float"""
         result = np.empty((length, ), dtype = np.float32)
@@ -135,7 +135,7 @@ for param in param_noise:
             result[pos:length] = arr[:length-pos]
         return result
 
-    #%%
+    
     for label in column:
         max_length = max(all_df[label].apply(len))
         if(max_length<=6452):
@@ -143,7 +143,7 @@ for param in param_noise:
         all_df[label] = all_df[label].apply(repeat_to_length, length=max_length)
 
 
-    #%%
+    
     x=[]
 
     x1=np.stack(all_df['pcgc01'].values, axis=0)
@@ -156,7 +156,7 @@ for param in param_noise:
     x8=np.stack(all_df['pcgc78'].values, axis=0)
     x9=np.stack(all_df['pcgc89'].values, axis=0)
     x10=np.stack(all_df['pcgc910'].values, axis=0)
-    #%%
+    
     for i in range(len(all_df['pcg_all'])):
         x_list=[]
         x_list.append(x1[i])
@@ -171,11 +171,11 @@ for param in param_noise:
         x_list.append(x10[i])
         x.append(x_list)
     print(x)
-    #%%
+    
     x=np.array(x)
-    #%%
+    
     print(x.shape)
-    #%%
+    
 
     Y = np.stack(all_df['label'].values, axis=0)
     y=np.zeros(len(Y))
@@ -186,9 +186,9 @@ for param in param_noise:
             y[i]=1
 
     y=np.array(y)
-    #%%
+    
     y
-    #%%
+    
     """
     X = torch.tensor(x, dtype=torch.float32)
     y = torch.tensor(y, dtype=torch.float32) 
@@ -198,27 +198,26 @@ for param in param_noise:
     x = torch.FloatTensor(x)
     y = torch.LongTensor(y)
 
-    #%%
+    
     x_train, x_test, y_train, y_test, train_filenames, test_filenames = train_test_split(x, y, all_df['path'].values, train_size = 0.7, test_size=0.3)
     #print("x_train: {0}, x_test: {1}".format(x_train.shape, x_test.shape))
     del x,y
 
-    #%%
+    
     train_dataset = torch.utils.data.TensorDataset(x_train, y_train)
     test_dataset = torch.utils.data.TensorDataset(x_test, y_test)
 
     X_sample, y_sample = train_dataset[0]
     print(X_sample.size(), y_sample.size())
-    #%%
+    
 
     trainloader = torch.utils.data.DataLoader(train_dataset, batch_size = BATCH_SIZE,
                             shuffle = True, num_workers = 0) #Windows Osの方はnum_workers=1 または 0が良いかも
     testloader = torch.utils.data.DataLoader(test_dataset, batch_size = BATCH_SIZE,
                             shuffle = False, num_workers = 0) #Windows Osの方はnum_workers=1 または 0が良いかも
-    # %%
 
 
-    #%% 
+
     # ------------------------- model hyper param -----------------------------
     model = 'CNN_conv2D'
     in_channel = 10
@@ -242,12 +241,12 @@ for param in param_noise:
     print(x_test.shape)
     print(net)
 
-    #%%
+    
     now = plot.evaluate_history(history)
     plot.test_result(net, test_loader, now, device)
 
 
-# %%
+
 import time
 # Line notify
 import requests
