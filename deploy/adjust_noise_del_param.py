@@ -39,9 +39,9 @@ LEARNING_RATE = 0.5
 #%%
 print(os.name)
 if os.name=='posix':
-    dataset = [{'path': path, 'label': path.split('/' )[3] } for path in glob.glob("../dataset_heart_sound/AV/*/*.wav")]
+    dataset = [{'path': path, 'label': path.split('/' )[3] } for path in glob.glob("../dataset_heart_sound/AV_param/*/*.wav")]
 else:
-    dataset = [{'path': path, 'label': path.split('\\' )[3] } for path in glob.glob("..\dataset_heart_sound\AV\**\*.wav")]
+    dataset = [{'path': path, 'label': path.split('\\' )[3] } for path in glob.glob("..\dataset_heart_sound\AV_param\**\*.wav")]
 
 #%%
 df = pd.DataFrame.from_dict(dataset)
