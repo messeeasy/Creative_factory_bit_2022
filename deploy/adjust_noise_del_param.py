@@ -108,8 +108,8 @@ for param in param_noise:
         # 長さを調節するため、いったんコメントアウト
         #data,data_fs=data_arrange.datalode(path)
         data,data_fs=datalode(path,param[0],param[1])
-        #data,me,st=noise_delet.standard_deviation(data, param[2])
-        #data = noise_delet.lowpass(data, data_fs, param[3], param[4], param[5], param[6])
+        data,me,st=noise_delet.standard_deviation(data, param[2])
+        data = noise_delet.lowpass(data, data_fs, param[3], param[4], param[5], param[6])
         # 周波数変換コード　使わないとき除く
         data = get_PCG_noise_del(data, data_fs)
         dataset_all.append(data)
