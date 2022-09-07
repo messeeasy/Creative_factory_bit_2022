@@ -30,6 +30,7 @@ def L_split_process(data,L=10000):
         for i in range(num-1):
             data_L_split.append(data_x[i*L:(i+1)*L])
     return  data_L_split,split_num
+
 def L_split(data,L=10000):
     data_L_split=[]
     split_num=[]

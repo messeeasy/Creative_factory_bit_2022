@@ -12,35 +12,33 @@ class CNN_conv1D(nn.Module):
             nn.ReLU(),
             nn.MaxPool1d(filter_size[0], pool_strides[0]),
             nn.BatchNorm1d(filter_num[0]),
-            nn.Dropout(dropout_para[0]),
             nn.Conv1d(filter_num[0], filter_num[1], filter_size[1], stride=strides[1]),
             nn.ReLU(),
             nn.MaxPool1d(filter_size[1], pool_strides[1]),
             nn.BatchNorm1d(filter_num[1]),
-            nn.Dropout(dropout_para[1]),
             nn.Conv1d(filter_num[1], filter_num[2], filter_size[2], stride=strides[2]),
             nn.ReLU(),
             nn.MaxPool1d(filter_size[2], pool_strides[2]),
             nn.BatchNorm1d(filter_num[2]),
-            nn.Dropout(dropout_para[2]),
             nn.Conv1d(filter_num[2], filter_num[3], filter_size[3], stride=strides[3]),
             nn.ReLU(),
             nn.MaxPool1d(filter_size[3], pool_strides[3]),
             nn.BatchNorm1d(filter_num[3]),
-            nn.Dropout(dropout_para[3]),
+            nn.Dropout(dropout_para[0]),
             nn.Conv1d(filter_num[3], filter_num[4], filter_size[4], stride=strides[4]),
             nn.ReLU(),
             nn.MaxPool1d(filter_size[4], pool_strides[4]),
             nn.BatchNorm1d(filter_num[4]),
-            nn.Dropout(dropout_para[4]),
+            nn.Dropout(dropout_para[1]),
             nn.Conv1d(filter_num[4], filter_num[5], filter_size[5], stride=strides[5]),
             nn.ReLU(),
             nn.MaxPool1d(filter_size[5], pool_strides[5]),
             nn.BatchNorm1d(filter_num[5]),
-            nn.Dropout(dropout_para[5]),
+            nn.Dropout(dropout_para[2]),
             nn.AdaptiveAvgPool1d(1),
             nn.Flatten(),
-            nn.Linear(filter_num[5],2)
+            nn.Linear(filter_num[5],2),
+            nn.Sigmoid()
 
         )
 
@@ -83,7 +81,9 @@ class CNN_conv2D(nn.Module):
             nn.Dropout(dropout_para[2]),
             nn.AdaptiveAvgPool2d((1,1)),
             nn.Flatten(),
-            nn.Linear(filter_num[5],2)
+            nn.Linear(filter_num[5],2),
+            nn.Sigmoid()
+
         )
 
     def forward(self, x):
@@ -107,7 +107,7 @@ class LSTM_conv1D(nn.Module):
         self.relu = nn.ReLU()
         self.drop = nn.Dropout(dropout)
         self.fc2 = nn.Linear(hidden_size2, output_size)
-
+        self.Sigmoid()
         nn.init.xavier_normal_(self.rnn.weight_ih_l0)
         nn.init.orthogonal_(self.rnn.weight_hh_l0)
         
@@ -117,6 +117,7 @@ class LSTM_conv1D(nn.Module):
         x = self.relu(x)
         x = self.drop(x)
         x = self.fc2(x)
+        x = self.Sigmoid(x)
         
         return x
         

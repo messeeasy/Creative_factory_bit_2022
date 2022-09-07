@@ -31,7 +31,6 @@ def evaluate_history(history):
     now = datetime.datetime.now()
     filename = './output/loss_' + now.strftime('%Y%m%d_%H%M%S') + '.png'
     plt.savefig(filename)
-    plt.close()
 
     # Learning Curveの表示 (accuracy)
     plt.figure(figsize=(9,8))
@@ -44,7 +43,6 @@ def evaluate_history(history):
     plt.legend()
     filename = './output/accuracy_' + now.strftime('%Y%m%d_%H%M%S') + '.png'
     plt.savefig(filename)
-    plt.close()
 
     return now
     
@@ -89,7 +87,6 @@ def test_result(net, test_loader, now, device):
     plt.title("Confusion matrix")
     filename = './output/test_confusion_' + now.strftime('%Y%m%d_%H%M%S') + '.png'
     plt.savefig(filename)
-    plt.close()
     
 
 
@@ -102,7 +99,6 @@ def test_result(net, test_loader, now, device):
     plt.grid()
     filename = './output/ROCcurve_' + now.strftime('%Y%m%d_%H%M%S') + '.png'
     plt.savefig(filename)
-    plt.close()
     
     # あとで、テキストに出力する
     print('---- AUC score ----')

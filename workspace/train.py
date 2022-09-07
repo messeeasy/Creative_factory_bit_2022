@@ -73,7 +73,7 @@ def eval_loss(loader, device, net, criterion):
 def fit(net, optimizer, criterion, num_epochs, train_loader, test_loader, device, history):
 
     # tqdmライブラリのインポート
-    #from tqdm.notebook import tqdm
+    from tqdm.notebook import tqdm
 
     base_epochs = len(history)
 
@@ -87,7 +87,7 @@ def fit(net, optimizer, criterion, num_epochs, train_loader, test_loader, device
         net.train()
         count = 0
 
-        for inputs, labels in train_loader:#tqdm(train_loader):
+        for inputs, labels in tqdm(train_loader):
             count += len(labels)
             inputs = inputs.to(device)
             labels = labels.to(device)
@@ -144,8 +144,7 @@ def fit(net, optimizer, criterion, num_epochs, train_loader, test_loader, device
             avg_val_loss = val_loss / count
             avg_val_acc = val_acc / count
     
-        #print (f'Epoch [{(epoch+1)}/{num_epochs+base_epochs}], loss: {avg_train_loss:.5f} acc: {avg_train_acc:.5f} val_loss: {avg_val_loss:.5f}, val_acc: {avg_val_acc:.5f}')
+        print (f'Epoch [{(epoch+1)}/{num_epochs+base_epochs}], loss: {avg_train_loss:.5f} acc: {avg_train_acc:.5f} val_loss: {avg_val_loss:.5f}, val_acc: {avg_val_acc:.5f}')
         item = np.array([epoch+1, avg_train_loss, avg_train_acc, avg_val_loss, avg_val_acc])
         history = np.vstack((history, item))
     return history, net
-

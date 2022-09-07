@@ -32,12 +32,12 @@ import train
 import plot
 
 #%%
-EPOCH = 100
+EPOCH = 50
 BATCH_SIZE=30
 #WEIGHT_DECAY = 0.1
 LEARNING_RATE = 0.5
 #%%
-print(os.name)
+#print(os.name)
 if os.name=='posix':
     dataset = [{'path': path, 'label': path.split('/' )[3] } for path in glob.glob("../dataset_heart_sound/AV_param/*/*.wav")]
 else:
@@ -75,6 +75,11 @@ def get_PCG_noise_del(data, data_fs):
     #kari_list.append(1)
     return kari_list
 
+def datalode(path,length,delay=0):
+    Fs1, data1 = wf.read(path)
+    data2=data1[delay:(length+delay)]
+    return np.array(data2),Fs1
+
 #%%
 
 # ------------------ noise del hyper param ---------------------
@@ -85,12 +90,14 @@ gpass_l = 5     #通過域端最大損失[dB]
 gstop_l = 40      #阻止域端最小損失[dB]kotei
 #L=10000
 
+length = [value for value in np.arange(1, 20000, 0.5)]
+delay = [0]
 std_scale = [value for value in np.arange(1, 11, 0.5)]
 fp_l = [value for value in np.arange(600, 800, 200)]
 fs_l = [value for value in np.arange(600, 800, 200)]
 gpass_l = [value for value in np.arange(5, 6, 1)]
 gstop_l = [value for value in np.arange(40, 50, 10)]
-param_noise = list(itertools.product(std_scale, fp_l, fs_l, gpass_l, gstop_l))
+param_noise = list(itertools.product(length, delay, std_scale, fp_l, fs_l, gpass_l, gstop_l))
 # ----------------------------------------------------------------
 
 for param in param_noise:
@@ -98,17 +105,19 @@ for param in param_noise:
 
     print(param)
     for path in df['path']:
-        data,data_fs=data_arrange.datalode(path)
-        data,me,st=noise_delet.standard_deviation(data, param[0])
-        #data = noise_delet.lowpass(data, data_fs, param[1], param[2], param[3], param[4])
+        # 長さを調節するため、いったんコメントアウト
+        #data,data_fs=data_arrange.datalode(path)
+        data,data_fs=datalode(path,param[0],param[1])
+        #data,me,st=noise_delet.standard_deviation(data, param[2])
+        #data = noise_delet.lowpass(data, data_fs, param[3], param[4], param[5], param[6])
         # 周波数変換コード　使わないとき除く
         data = get_PCG_noise_del(data, data_fs)
         dataset_all.append(data)
 
     #dataset_all,split_num=data_arrange.L_split(dataset_all,L)
     
-    print(str(np.shape(dataset_all)))
-    print(str(np.shape(data)))
+    #print(str(np.shape(dataset_all)))
+    #print(str(np.shape(data)))
     
     #いつでもいろんな値が使えるように全部dfにくっつける
     #pcgc01の01はC[0]~C[1]
@@ -170,11 +179,11 @@ for param in param_noise:
         x_list.append(x9[i])
         x_list.append(x10[i])
         x.append(x_list)
-    print(x)
+    #print(x)
     
     x=np.array(x)
     
-    print(x.shape)
+    #print(x.shape)
     
 
     Y = np.stack(all_df['label'].values, axis=0)
@@ -208,7 +217,7 @@ for param in param_noise:
     test_dataset = torch.utils.data.TensorDataset(x_test, y_test)
 
     X_sample, y_sample = train_dataset[0]
-    print(X_sample.size(), y_sample.size())
+    #print(X_sample.size(), y_sample.size())
     
 
     trainloader = torch.utils.data.DataLoader(train_dataset, batch_size = BATCH_SIZE,
@@ -225,7 +234,7 @@ for param in param_noise:
     filter_size = [2,2,4,4,6,6]
     strides = [1,1,1,1,1,1]
     pool_strides = [1,1,1,1,1,1]
-    dropout_para = [0.5,0.5,0.5]
+    dropout_para = [0.5,0.5,0.5,0.5,0.5]
     lr = 0.01
     epoch = 100
     train_loader = trainloader
@@ -237,9 +246,9 @@ for param in param_noise:
     net = train.model_setting_cnn(model, in_channel, filter_num, filter_size, strides, pool_strides, dropout_para, device)
     history, net = train.training(net, lr, epoch, train_loader, val_loader, device)
 
-    print(x_train.shape)
-    print(x_test.shape)
-    print(net)
+    #print(x_train.shape)
+    #print(x_test.shape)
+    #print(net)
 
     
     now = plot.evaluate_history(history)
@@ -262,11 +271,12 @@ def send_line_notify(notification_message):
     requests.post(line_notify_api, headers = headers, data = data)
 
 
-time_sta = time.perf_counter()
+#time_sta = time.perf_counter()
+"""
 try:
     grid.fit(train_images, train_labels)
 except Exception as e:
     send_line_notify('Error')
     
-time_end = time.perf_counter()
+#time_end = time.perf_counter()"""
 send_line_notify('finish adjust_param')
