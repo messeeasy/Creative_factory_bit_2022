@@ -40,6 +40,11 @@ print(gstop_l)
 # %%
 param = list(itertools.product(length, delay, std_scale, fp_l, fs_l, gpass_l, gstop_l))
 print(len(param))
+print(param)
+
+param_noise = [p for p in param_noise if p[3] < p[4]]
+print(len(param))
+print(param)
 # %%
 print(param[1][1])
 # %%
