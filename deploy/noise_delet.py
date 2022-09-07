@@ -18,7 +18,7 @@ def standard_deviation(data,N=1,device=torch.device('cuda:0')):
             else:
                 data[i]=-1*data_mean
         
-    return np.array(data),data_mean,data_std
+    return data.to("cpu").numpy,data_mean,data_std
 
 def highpass(x, samplerate, fp, fs, gpass, gstop):
     fn = samplerate / 2                           #ナイキスト周波数
