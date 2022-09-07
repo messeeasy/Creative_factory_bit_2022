@@ -3,13 +3,13 @@ from scipy import signal
 import numpy as np
 import soundfile as sf
 import os
-def standard_deviation(data,N=1):
-    data = torch.FloatTensor(data)
+def standard_deviation(data,N=1,device=torch.device('cuda:0')):
+    data = torch.cuda.FloatTensor(data, device=device)
     data_mean=torch.mean(abs(data))
     data_std=torch.std(abs(data))
     #print(data_std)
     #print(data_mean)
-
+# ここが遅い
     for i in range(len(data)):
 
         if abs(data[i])>N*data_std:
