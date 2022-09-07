@@ -3,6 +3,7 @@
 import data_arrange
 import torch
 import numpy as np
+import pandas as pd
 #%%
 def cnn_conv1_dataset(df_fold,fold,BATCH_SIZE=20):
     y_df = df_fold[df_fold.kfold == fold]
@@ -33,4 +34,11 @@ def change_dimensions(list1):
     for i in range(len(list1)):
      list_change.extend(list1[i])
     return np.array(list_change)
-
+def create_df_k(k,data_filter_after,y_L_split):
+    pd_fold=np.array(list(range(k)))
+    df_fold = pd.DataFrame(pd_fold,
+                  columns=['kfold'],)
+    #df_fold['data']=data_L_split
+    df_fold['data']=data_filter_after
+    df_fold['label_y']=y_L_split
+    return df_fold

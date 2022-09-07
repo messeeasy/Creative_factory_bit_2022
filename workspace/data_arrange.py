@@ -25,6 +25,16 @@ def get_data(df):
         data_x,data_fs=datalode(path) 
         data.append(data_x)
     return data
+def get_label(df):
+    Y = np.stack(df['label'].values, axis=0)
+    y=np.zeros(len(Y))
+    for i in range(len(Y)):
+        if Y[i]=='normal':
+            y[i]=0
+        elif Y[i]=='abnormal':
+            y[i]=1
+
+    return np.array(y)
 def repeat_to_length(arr, length):
     """Repeats the numpy 1D array to given length, and makes datatype float"""
     result = np.empty((length, ), dtype = np.float32)
