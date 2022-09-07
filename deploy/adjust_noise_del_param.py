@@ -85,9 +85,9 @@ gpass_l = 5     #通過域端最大損失[dB]
 gstop_l = 40      #阻止域端最小損失[dB]kotei
 #L=10000
 
-std_scale = [value for value in np.arange(3, 7, 1)]
-fp_l = [value for value in np.arange(100, 1000, 200)]
-fs_l = [value for value in np.arange(200, 800, 200)]
+std_scale = [value for value in np.arange(1, 11, 0.5)]
+fp_l = [value for value in np.arange(600, 800, 200)]
+fs_l = [value for value in np.arange(600, 800, 200)]
 gpass_l = [value for value in np.arange(5, 6, 1)]
 gstop_l = [value for value in np.arange(40, 50, 10)]
 param_noise = list(itertools.product(std_scale, fp_l, fs_l, gpass_l, gstop_l))
@@ -100,7 +100,7 @@ for param in param_noise:
     for path in df['path']:
         data,data_fs=data_arrange.datalode(path)
         data,me,st=noise_delet.standard_deviation(data, param[0])
-        data = noise_delet.lowpass(data, data_fs, param[1], param[2], param[3], param[4])
+        #data = noise_delet.lowpass(data, data_fs, param[1], param[2], param[3], param[4])
         # 周波数変換コード　使わないとき除く
         data = get_PCG_noise_del(data, data_fs)
         dataset_all.append(data)
