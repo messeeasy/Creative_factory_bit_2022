@@ -32,9 +32,10 @@ import plot
 import librosa
 import librosa.display
 
+
 #%%
 EPOCH = 50
-BATCH_SIZE=30
+BATCH_SIZE=20
 #WEIGHT_DECAY = 0.1
 LEARNING_RATE = 0.5
 #%%
@@ -60,13 +61,15 @@ gpass_l = 5     #通過域端最大損失[dB]
 gstop_l = 40      #阻止域端最小損失[dB]kotei
 #L=10000
 
-length = [15000, 200, 250, 300, 350]
+length = [30000, 200, 250, 300, 350]
 delay = [0]
-std_scale = [2,2.5,3,3.5,4,4.5,5,5.5,6,7,8,9,10]
-fp_l = [300, 200, 300, 400, 500, 600, 700, 800, 900]
+std_scale = [4,2.5,3,3.5,4,4.5,5,5.5,6,7,8,9,10]
+fp_l = [600, 200, 300, 400, 500, 600, 700, 800, 900]
 fs_l = [1000, 150, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
 gpass_l = [3, 5, 7]
 gstop_l = [20, 30, 40, 50]
+n_fft = 5000
+hop_length = 360
 param_noise = list(itertools.product(length, delay, std_scale, fp_l, fs_l, gpass_l, gstop_l))
 param_noise = [p for p in param_noise if p[3] < p[4]]
 # -------------------------------------------------------------
@@ -84,12 +87,12 @@ def datalode(path,length,delay=0):
 def calculate_melsp(x, n_fft=1024, hop_length=128):
     stft = np.abs(librosa.stft(x, n_fft=n_fft, hop_length=hop_length))**2
     log_stft = librosa.power_to_db(stft)
-    melsp = librosa.feature.melspectrogram(S=log_stft, n_mels=128)
+    melsp = librosa.feature.melspectrogram(S=log_stft, n_mels=hop_length)
     return melsp
 
 # display wave in heatmap
 def show_melsp(melsp, fs):
-    librosa.display.specshow(melsp, sr=fs, x_axis="time", y_axis="mel", hop_length=128)
+    librosa.display.specshow(melsp, sr=fs, cmap='magma', x_axis="time", y_axis="mel", hop_length=128)
     plt.colorbar(format='%+2.0f dB')
     plt.title('Mel spectrogram')
     plt.show()
@@ -104,6 +107,7 @@ melsp = calculate_melsp(data)
 # %%
 # ------------------------ データ前処理 --------------------------
 dataset_all = []
+
 for path in df['path']:
         # 長さを調節するため、いったんコメントアウト
         #data,data_fs=data_arrange.datalode(path)
@@ -112,11 +116,13 @@ for path in df['path']:
         data = noise_delet.lowpass(data, data_fs, param[3], param[4], param[5], param[6])
         # 周波数変換コード　使わないとき除く
         #data = get_PCG_noise_del(data, data_fs)
-        melsp = calculate_melsp(data)
+        melsp = calculate_melsp(data, n_fft, hop_length)
         dataset_all.append(melsp)
+        
 #%%
-print(dataset_all[0])
-show_melsp(np.array(dataset_all[1]),4000)
+dataset_all = np.array(dataset_all)
+print(dataset_all.shape)
+show_melsp(dataset_all[1],4000)
 # dataset(N, C=128, W =1, H =118)　Hは音の長さによって変わる。今回は15000でそろえている
 
 # %%
@@ -139,6 +145,7 @@ x=dataset_all[:,np.newaxis,:,:]
 
 x = torch.FloatTensor(x)
 y = torch.LongTensor(y)
+
 # %%
 x_train, x_test, y_train, y_test, train_filenames, test_filenames = train_test_split(x, y, df['path'].values, train_size = 0.7, test_size=0.3)
 #print("x_train: {0}, x_test: {1}".format(x_train.shape, x_test.shape))
@@ -150,16 +157,38 @@ test_dataset = torch.utils.data.TensorDataset(x_test, y_test)
 
 X_sample, y_sample = train_dataset[0]
 print(X_sample.size(), y_sample.size())
+
 #%%
 
 trainloader = torch.utils.data.DataLoader(train_dataset, batch_size = BATCH_SIZE,
                         shuffle = True, num_workers = 0) #Windows Osの方はnum_workers=1 または 0が良いかも
 testloader = torch.utils.data.DataLoader(test_dataset, batch_size = BATCH_SIZE,
                         shuffle = False, num_workers = 0) #Windows Osの方はnum_workers=1 または 0が良いかも
+
 # %%
-in_channel = 1
-filter_num = [16, 16, 16, 32, 32, 32]
-filter_size = [4,8,8,8,12,12]
-strides = [1,1,1,1,1,1]
-pool_strides = [1,1,1,1,1,1]
-dropout_para = [0.2,0.2,0.2]
+# ------------------------- hyper param -----------------------------
+model = 'CNN_conv2D_melspect'
+in_channel = 1 # メルスペクトの値を取るだけの軸なので
+filter_num = [8, 16, 32] # 参考資料の半分の半分
+filter_size = [4, 8, 16, 32, 8]
+strides = [1,1] #　固定
+pool_strides = [1,1,1,1,1,1] #不使用
+dropout_para = [0.3, 0.4, 0.5, 0.6, 0.7]
+lr = 0.001
+epoch = 100
+train_loader = trainloader
+val_loader = testloader # 本来はTrainの中のK個のうちのどれか
+test_loader = testloader
+# -------------------------------------------------------------------
+
+device = torch.device("cuda:0")
+net = train.model_setting_cnn(model, in_channel, filter_num, filter_size, strides, pool_strides, dropout_para, device)
+history, net = train.training(net, lr, epoch, train_loader, val_loader, device)
+
+print(x_train.shape)
+print(x_test.shape)
+print(net)
+
+#%%
+now = plot.evaluate_history(history)
+plot.test_result(net, test_loader, now, device)

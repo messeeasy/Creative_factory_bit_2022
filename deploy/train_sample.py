@@ -53,7 +53,7 @@ df.head()
 def get_PCG(path,PCG_list):
     Fs1, data1 = wf.read(path)
     data2=data1[400:(len(data1)//5+400)]
-    data2 = FC_fucntion.vec_nor(data2)
+    data2 = FC_fucntion.vec_nor(np.array(data2))
     pcgFFT1, vTfft1 = FC_fucntion.fft_k_N(data2, Fs1, 2000)
 
     E_PCG,C = FC_fucntion.E_VS_100(pcgFFT1, vTfft1, 'percentage')
@@ -73,7 +73,7 @@ def get_PCG(path,PCG_list):
 PCG=[]
 for path in df['path']:
     get_PCG(path,PCG)
-
+print(str(np.shape(PCG)))
 #%%
 #いつでもいろんな値が使えるように全部dfにくっつける
 #pcgc01の01はC[0]~C[1]
@@ -186,11 +186,11 @@ testloader = torch.utils.data.DataLoader(test_dataset, batch_size = BATCH_SIZE,
 # ------------------------- hyper param -----------------------------
 model = 'CNN_conv2D'
 in_channel = 10
-filter_num = [16, 16, 16, 32, 32, 32]
-filter_size = [4,8,8,8,12,12]
+filter_num = [4, 4, 6, 6, 8, 8]
+filter_size = [2,2,4,4,6,6]
 strides = [1,1,1,1,1,1]
 pool_strides = [1,1,1,1,1,1]
-dropout_para = [0.2,0.2,0.2]
+dropout_para = [0.5,0.5,0.5]
 lr = 0.01
 epoch = 100
 train_loader = trainloader
