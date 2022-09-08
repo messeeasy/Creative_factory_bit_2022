@@ -31,8 +31,9 @@ import train
 import plot
 import librosa
 import librosa.display
+import data_augment
 # ------------------ noise del hyper param ---------------------
-std_scale = 2
+std_scale = 4
 fp_l = 300       #通過域端周波数[Hz]kotei
 fs_l = 1000      #阻止域端周波数[Hz]
 gpass_l = 5     #通過域端最大損失[dB]
@@ -56,7 +57,7 @@ BATCH_SIZE=30
 LEARNING_RATE = 0.5
 k=5
 L=10000
-model = ['CNN_conv1D','CNN_conv2D']
+model = ['CNN_conv1D','CNN_conv2D','CNN_conv2D_melsp']
 #%%
 #%%
 df=data_arrange.get_path()
@@ -88,20 +89,55 @@ for data_x in data_L_split:
 del data_L_split
 #----------------------------------------------------
 #%%
-# メルスペクト
-def calculate_melsp(x, n_fft=1024, hop_length=128):
-    stft = np.abs(librosa.stft(x, n_fft=n_fft, hop_length=hop_length))**2
-    log_stft = librosa.power_to_db(stft)
-    melsp = librosa.feature.melspectrogram(S=log_stft, n_mels=128)
-    return melsp
-
-# display wave in heatmap
-def show_melsp(melsp, fs):
-    librosa.display.specshow(melsp, sr=fs, x_axis="time", y_axis="mel", hop_length=128)
-    plt.colorbar(format='%+2.0f dB')
-    plt.title('Mel spectrogram')
-    plt.show()
-
-#%%
-len(data_filter_after)
+select_data=data_augment.get_select_PCG(data_filter_after,model)
 # %%
+print(len(select_data[2][0][0][0]))
+#%%
+data_augment.show_melsp(np.array(select_data[2][0][0]),4000)
+#%%
+
+for i in range(len(model)):
+
+    if model[i]=='CNN_conv2D':
+
+        in_channel = 10
+        filter_num = [16, 16, 16, 32, 32, 32]
+        filter_size = [4,8,8,8,12,12]
+        strides = [1,1,1,1,1,1]
+        pool_strides = [1,1,1,1,1,1]
+        dropout_para = [0.2,0.2,0.2]
+    elif model[i]=='CNN_conv1D':
+        in_channel = 1
+        filter_num = [4, 8, 16, 32, 64, 128]
+        filter_size = [4,4,4,4,4,14]
+        strides = [1,1,1,1,1,1]
+        pool_strides = [2,2,2,2,2,2]
+        dropout_para = [0.2,0.2,0.2]
+    elif model[i]=='CNN_conv2D_melsp':
+        in_channel = 1
+        filter_num = [16, 16, 16, 32, 32, 32]
+        filter_size = [4,8,8,8,12,12]
+        strides = [2,2,2,2,2,2]
+        pool_strides = [2,2,2,2,2,2]
+        dropout_para = [0.2,0.2,0.2]
+
+    lr = 0.01
+    epoch = 50
+    BATCH_SIZE=20
+    df_fold=data_augment.create_df_k(k,select_data[i],y_L_split)
+
+    for fold in range(k):
+        trainloader,testloader=data_augment.model_setting_dataset(df_fold,fold,BATCH_SIZE,model[i])
+
+        train_loader = trainloader
+        val_loader = testloader # 本来はTrainの中のK個のうちのどれか
+        test_loader = testloader
+
+        device = torch.device("cuda:0")
+        net = train.model_setting_cnn(model[i], in_channel, filter_num, filter_size, strides, pool_strides, dropout_para, device)
+        history, net = train.training(net, lr, epoch, train_loader, val_loader, device)
+
+        print(net)
+        now = plot.evaluate_history(history)
+        plot.test_result(net, test_loader, now, device)
+    print("finished"+model[i])
