@@ -63,8 +63,8 @@ gstop_l = 40      #阻止域端最小損失[dB]kotei
 
 length = [15000, 200, 250, 300, 350]
 delay = [0]
-std_scale = [2,2.5,3,3.5,4,4.5,5,5.5,6,7,8,9,10]
-fp_l = [300, 200, 300, 400, 500, 600, 700, 800, 900]
+std_scale = [4,2.5,3,3.5,4,4.5,5,5.5,6,7,8,9,10]
+fp_l = [200, 200, 300, 400, 500, 600, 700, 800, 900]
 fs_l = [1000, 150, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
 gpass_l = [3, 5, 7]
 gstop_l = [20, 30, 40, 50]
@@ -90,7 +90,7 @@ def calculate_melsp(x, n_fft=1024, hop_length=128):
 
 # display wave in heatmap
 def show_melsp(melsp, fs):
-    librosa.display.specshow(melsp, sr=fs, x_axis="time", y_axis="mel", hop_length=128)
+    librosa.display.specshow(melsp, sr=fs, cmap='magma', x_axis="time", y_axis="mel", hop_length=128)
     plt.colorbar(format='%+2.0f dB')
     plt.title('Mel spectrogram')
     plt.show()
@@ -167,12 +167,12 @@ testloader = torch.utils.data.DataLoader(test_dataset, batch_size = BATCH_SIZE,
 # ------------------------- hyper param -----------------------------
 model = 'CNN_conv2D_melspect'
 in_channel = 1 # メルスペクトの値を取るだけの軸なので
-filter_num = [16, 32, 64] # 参考資料の半分
+filter_num = [8, 16, 32] # 参考資料の半分の半分
 filter_size = [4, 8, 16, 32, 8]
-strides = [1,1]
+strides = [1,1] #　固定
 pool_strides = [1,1,1,1,1,1] #不使用
-dropout_para = [0.2, 0.3, 0.4, 0.5, 0.6]
-lr = 0.0001
+dropout_para = [0.3, 0.4, 0.5, 0.6, 0.7]
+lr = 0.001
 epoch = 100
 train_loader = trainloader
 val_loader = testloader # 本来はTrainの中のK個のうちのどれか

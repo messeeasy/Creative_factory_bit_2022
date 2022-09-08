@@ -76,7 +76,7 @@ def eval_loss(loader, device, net, criterion):
 def fit(net, optimizer, criterion, num_epochs, train_loader, test_loader, device, history):
 
     # tqdmライブラリのインポート
-    from tqdm.notebook import tqdm
+    #from tqdm.notebook import tqdm
 
     base_epochs = len(history)
 
@@ -90,7 +90,7 @@ def fit(net, optimizer, criterion, num_epochs, train_loader, test_loader, device
         net.train()
         count = 0
 
-        for inputs, labels in tqdm(train_loader):
+        for inputs, labels in train_loader:#tqdm(train_loader):
             count += len(labels)
             inputs = inputs.to(device)
             labels = labels.to(device)
