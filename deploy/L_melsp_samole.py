@@ -33,7 +33,7 @@ import librosa
 import librosa.display
 import data_augment
 # ------------------ noise del hyper param ---------------------
-std_scale = 4
+std_scale = 2
 fp_l = 300       #通過域端周波数[Hz]kotei
 fs_l = 1000      #阻止域端周波数[Hz]
 gpass_l = 5     #通過域端最大損失[dB]
@@ -47,6 +47,8 @@ fp_l = [300, 200, 300, 400, 500, 600, 700, 800, 900]
 fs_l = [1000, 150, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
 gpass_l = [3, 5, 7]
 gstop_l = [20, 30, 40, 50]
+n_fft = 5000
+hop_length = 360
 param_noise = list(itertools.product(length, delay, std_scale, fp_l, fs_l, gpass_l, gstop_l))
 param_noise = [p for p in param_noise if p[3] < p[4]]
 # -------------------------------------------------------------
@@ -57,7 +59,7 @@ BATCH_SIZE=30
 LEARNING_RATE = 0.5
 k=5
 L=10000
-model = ['CNN_conv1D','CNN_conv2D','CNN_conv2D_melsp']
+model = ['CNN_conv1D','CNN_conv2D','CNN_conv2D_melspect']
 #%%
 #%%
 df=data_arrange.get_path()
@@ -97,7 +99,7 @@ data_augment.show_melsp(np.array(select_data[2][0][0]),4000)
 #%%
 
 for i in range(len(model)):
-
+    i=2
     if model[i]=='CNN_conv2D':
 
         in_channel = 10
@@ -112,14 +114,14 @@ for i in range(len(model)):
         filter_size = [4,4,4,4,4,14]
         strides = [1,1,1,1,1,1]
         pool_strides = [2,2,2,2,2,2]
-        dropout_para = [0.2,0.2,0.2]
-    elif model[i]=='CNN_conv2D_melsp':
-        in_channel = 1
-        filter_num = [16, 16, 16, 32, 32, 32]
-        filter_size = [4,8,8,8,12,12]
-        strides = [2,2,2,2,2,2]
-        pool_strides = [2,2,2,2,2,2]
-        dropout_para = [0.2,0.2,0.2]
+        dropout_para = [0.2,0.2,0.2,0.2,0.2,0.2]
+    elif model[i]=='CNN_conv2D_melspect':
+        in_channel = 1 # メルスペクトの値を取るだけの軸なので
+        filter_num = [8, 16, 32] # 参考資料の半分の半分
+        filter_size = [4, 8, 16, 32, 8]
+        strides = [1,1] #　固定
+        pool_strides = [1,1,1,1,1,1] #不使用
+        dropout_para = [0.3, 0.4, 0.5, 0.6, 0.7]
 
     lr = 0.01
     epoch = 50
@@ -137,7 +139,10 @@ for i in range(len(model)):
         net = train.model_setting_cnn(model[i], in_channel, filter_num, filter_size, strides, pool_strides, dropout_para, device)
         history, net = train.training(net, lr, epoch, train_loader, val_loader, device)
 
-        print(net)
+        #print(net)
         now = plot.evaluate_history(history)
         plot.test_result(net, test_loader, now, device)
     print("finished"+model[i])
+
+
+    break

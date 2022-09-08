@@ -53,7 +53,7 @@ def lowpass(x, samplerate, fp, fs, gpass, gstop):
 def filter_processing(data,data_fs):
     data_after=[]
     for data_x in data:
-        data_std,me,st=standard_deviation_np(data_x,2)
+        data_std,me,st=standard_deviation_np(data_x,4)
     
         fp_high = 90       #通過域端周波数[Hz]
         fs_high = 60      #阻止域端周波数[Hz]
