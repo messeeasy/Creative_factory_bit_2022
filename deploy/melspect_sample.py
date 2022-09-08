@@ -34,10 +34,9 @@ import librosa.display
 
 
 #%%
-EPOCH = 50
+
 BATCH_SIZE=20
-#WEIGHT_DECAY = 0.1
-LEARNING_RATE = 0.5
+
 #%%
 #print(os.name)
 if os.name=='posix':
@@ -61,15 +60,15 @@ gpass_l = 5     #通過域端最大損失[dB]
 gstop_l = 40      #阻止域端最小損失[dB]kotei
 #L=10000
 
-length = [30000, 200, 250, 300, 350]
+length = [30000]
 delay = [0]
-std_scale = [4,2.5,3,3.5,4,4.5,5,5.5,6,7,8,9,10]
-fp_l = [600, 200, 300, 400, 500, 600, 700, 800, 900]
-fs_l = [1000, 150, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
-gpass_l = [3, 5, 7]
-gstop_l = [20, 30, 40, 50]
-n_fft = 5000
-hop_length = 360
+std_scale = [4]
+fp_l = [120]
+fs_l = [500]
+gpass_l = [5]
+gstop_l = [20]
+n_fft = 1024
+hop_length = 240
 param_noise = list(itertools.product(length, delay, std_scale, fp_l, fs_l, gpass_l, gstop_l))
 param_noise = [p for p in param_noise if p[3] < p[4]]
 # -------------------------------------------------------------
@@ -174,8 +173,8 @@ filter_size = [4, 8, 16, 32, 8]
 strides = [1,1] #　固定
 pool_strides = [1,1,1,1,1,1] #不使用
 dropout_para = [0.3, 0.4, 0.5, 0.6, 0.7]
-lr = 0.001
-epoch = 100
+lr = 0.0001
+epoch = 150
 train_loader = trainloader
 val_loader = testloader # 本来はTrainの中のK個のうちのどれか
 test_loader = testloader
