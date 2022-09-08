@@ -61,13 +61,15 @@ gpass_l = 5     #通過域端最大損失[dB]
 gstop_l = 40      #阻止域端最小損失[dB]kotei
 #L=10000
 
-length = [15000, 200, 250, 300, 350]
+length = [30000, 200, 250, 300, 350]
 delay = [0]
 std_scale = [4,2.5,3,3.5,4,4.5,5,5.5,6,7,8,9,10]
-fp_l = [200, 200, 300, 400, 500, 600, 700, 800, 900]
+fp_l = [600, 200, 300, 400, 500, 600, 700, 800, 900]
 fs_l = [1000, 150, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
 gpass_l = [3, 5, 7]
 gstop_l = [20, 30, 40, 50]
+n_fft = 5000
+hop_length = 360
 param_noise = list(itertools.product(length, delay, std_scale, fp_l, fs_l, gpass_l, gstop_l))
 param_noise = [p for p in param_noise if p[3] < p[4]]
 # -------------------------------------------------------------
@@ -85,7 +87,7 @@ def datalode(path,length,delay=0):
 def calculate_melsp(x, n_fft=1024, hop_length=128):
     stft = np.abs(librosa.stft(x, n_fft=n_fft, hop_length=hop_length))**2
     log_stft = librosa.power_to_db(stft)
-    melsp = librosa.feature.melspectrogram(S=log_stft, n_mels=128)
+    melsp = librosa.feature.melspectrogram(S=log_stft, n_mels=hop_length)
     return melsp
 
 # display wave in heatmap
@@ -114,7 +116,7 @@ for path in df['path']:
         data = noise_delet.lowpass(data, data_fs, param[3], param[4], param[5], param[6])
         # 周波数変換コード　使わないとき除く
         #data = get_PCG_noise_del(data, data_fs)
-        melsp = calculate_melsp(data)
+        melsp = calculate_melsp(data, n_fft, hop_length)
         dataset_all.append(melsp)
         
 #%%
