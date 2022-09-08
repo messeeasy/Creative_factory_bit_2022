@@ -54,6 +54,9 @@ EPOCH = 50
 BATCH_SIZE=30
 #WEIGHT_DECAY = 0.1
 LEARNING_RATE = 0.5
+k=5
+L=10000
+model = ['CNN_conv1D','CNN_conv2D']
 #%%
 #%%
 df=data_arrange.get_path()
@@ -62,8 +65,28 @@ data=data_arrange.get_data(df)
 #%%
 y=data_arrange.get_label(df)
 
-#----------------------------------------------------
 
+data_train,data_test, y_train, y_test,data_train_path,data_test_path= train_test_split(data,y,df['path'].values,train_size = 0.8, test_size=0.2)
+del df,data,y
+#%%
+data_K_split,y_K_split=k_fold.k_fold(data_train,y_train,k)
+
+#%%[markdown]
+#ここでは長いデータが持っているため、Lごとに分割します。分割した際の余りは切り捨てています。
+#また、今後どのデータを何分割したかを使用するため、そのリストをsplit_numに格納します。
+
+#Since we have long data here, we split the data by L. The remainder of the split is truncated.
+#And store the list in split_num for future use of what data and how many splits.
+#%%
+data_L_split,y_L_split,split_num=data_arrange.L_split_add(data_K_split,y_K_split,L)
+del data_K_split,y_K_split
+#%%
+""" """
+data_filter_after=[]
+for data_x in data_L_split:
+    data_filter_after.append(noise_delet.filter_processing(np.array(data_x),4000))
+del data_L_split
+#----------------------------------------------------
 #%%
 # メルスペクト
 def calculate_melsp(x, n_fft=1024, hop_length=128):
@@ -78,3 +101,7 @@ def show_melsp(melsp, fs):
     plt.colorbar(format='%+2.0f dB')
     plt.title('Mel spectrogram')
     plt.show()
+
+#%%
+len(data_filter_after)
+# %%
