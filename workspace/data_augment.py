@@ -72,6 +72,11 @@ def select_PCG(data,model):
         return data_PCG
     else:
         return data
+def get_select_PCG(data_filter_after,model):
+    select_data=[]
+    for i in range(len(model)):
+        select_data.append(select_PCG(data_filter_after,model[i]))
+    return select_data
 def model_setting_dataset(df_fold,fold,BATCH_SIZE,model):
     if model == 'CNN_conv1D':
         trainloader,testloader=cnn_conv1_dataset(df_fold,fold,BATCH_SIZE)

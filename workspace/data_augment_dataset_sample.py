@@ -76,12 +76,10 @@ for data_x in data_L_split:
 del data_L_split
 
 #%%
-select_data=data_augment.select_PCG(data_filter_after,model[0])
-# %%
-df_fold=data_augment.create_df_k(k,select_data,y_L_split)
-del select_data,y_L_split
-#%%
+select_data=data_augment.get_select_PCG(data_filter_after,model)
 
+#%%
+print(len(select_data))
 #%%
 
 for i in range(len(model)):
@@ -103,20 +101,23 @@ for i in range(len(model)):
         dropout_para = [0.2,0.2,0.2]
 
     lr = 0.01
-    epoch = 50
+    epoch = 10
     BATCH_SIZE=20
+    df_fold=data_augment.create_df_k(k,select_data[i],y_L_split)
 
     for fold in range(k):
-        trainloader,testloader=data_augment.model_setting_dataset(df_fold,fold,BATCH_SIZE,model[0])
+        trainloader,testloader=data_augment.model_setting_dataset(df_fold,fold,BATCH_SIZE,model[i])
 
         train_loader = trainloader
         val_loader = testloader # 本来はTrainの中のK個のうちのどれか
         test_loader = testloader
 
         device = torch.device("cuda:0")
-        net = train.model_setting_cnn(model[0], in_channel, filter_num, filter_size, strides, pool_strides, dropout_para, device)
+        net = train.model_setting_cnn(model[i], in_channel, filter_num, filter_size, strides, pool_strides, dropout_para, device)
         history, net = train.training(net, lr, epoch, train_loader, val_loader, device)
 
         print(net)
         now = plot.evaluate_history(history)
         plot.test_result(net, test_loader, now, device)
+    print("finished"+model[i])
+# %%
