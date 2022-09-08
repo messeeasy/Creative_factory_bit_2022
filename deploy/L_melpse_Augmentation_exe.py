@@ -101,7 +101,6 @@ data_augment.show_melsp(np.array(select_data[2][0][0]),4000)
 #%%
 
 for i in range(len(model)):
-    i=2
     if model[i]=='CNN_conv2D':
 
         in_channel = 10
@@ -146,5 +145,3 @@ for i in range(len(model)):
         plot.test_result(net, test_loader, now, device)
     print("finished"+model[i])
 
-
-    break
