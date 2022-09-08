@@ -45,16 +45,7 @@ import data_augment
 #パラメータ調整
 k=5
 L=10000
-model = 'CNN_conv2D'
-in_channel = 10
-filter_num = [16, 16, 16, 32, 32, 32]
-filter_size = [4,8,8,8,12,12]
-strides = [1,1,1,1,1,1]
-pool_strides = [1,1,1,1,1,1]
-dropout_para = [0.2,0.2,0.2]
-lr = 0.01
-epoch = 50
-BATCH_SIZE=20
+model = ['CNN_conv1D','CNN_conv2D']
 
 #%%
 df=data_arrange.get_path()
@@ -85,28 +76,48 @@ for data_x in data_L_split:
 del data_L_split
 
 #%%
-data_PCG= data_arrange.get_PCG(data_filter_after)
-del data_L_split
-#%%
-data_PCG=np.array(data_PCG)
+select_data=data_augment.get_select_PCG(data_filter_after,model)
 
 #%%
-df_fold=data_augment.create_df_k(k,data_PCG,y_L_split)
-del data_PCG,y_L_split
+print(len(select_data))
 #%%
-for fold in range(k):
-    trainloader,testloader=data_augment.cnn_conv2_dataset(df_fold,fold,BATCH_SIZE)
 
-    train_loader = trainloader
-    val_loader = testloader # 本来はTrainの中のK個のうちのどれか
-    test_loader = testloader
+for i in range(len(model)):
 
-    device = torch.device("cuda:0")
-    net = train.model_setting_cnn(model, in_channel, filter_num, filter_size, strides, pool_strides, dropout_para, device)
-    history, net = train.training(net, lr, epoch, train_loader, val_loader, device)
+    if model[i]=='CNN_conv2D':
 
-    print(net)
-    now = plot.evaluate_history(history)
-    plot.test_result(net, test_loader, now, device)
+        in_channel = 10
+        filter_num = [16, 16, 16, 32, 32, 32]
+        filter_size = [4,8,8,8,12,12]
+        strides = [1,1,1,1,1,1]
+        pool_strides = [1,1,1,1,1,1]
+        dropout_para = [0.2,0.2,0.2]
+    elif model[i]=='CNN_conv1D':
+        in_channel = 1
+        filter_num = [4, 8, 16, 32, 64, 128]
+        filter_size = [4,4,4,4,4,14]
+        strides = [1,1,1,1,1,1]
+        pool_strides = [2,2,2,2,2,2]
+        dropout_para = [0.2,0.2,0.2]
 
+    lr = 0.01
+    epoch = 10
+    BATCH_SIZE=20
+    df_fold=data_augment.create_df_k(k,select_data[i],y_L_split)
+
+    for fold in range(k):
+        trainloader,testloader=data_augment.model_setting_dataset(df_fold,fold,BATCH_SIZE,model[i])
+
+        train_loader = trainloader
+        val_loader = testloader # 本来はTrainの中のK個のうちのどれか
+        test_loader = testloader
+
+        device = torch.device("cuda:0")
+        net = train.model_setting_cnn(model[i], in_channel, filter_num, filter_size, strides, pool_strides, dropout_para, device)
+        history, net = train.training(net, lr, epoch, train_loader, val_loader, device)
+
+        print(net)
+        now = plot.evaluate_history(history)
+        plot.test_result(net, test_loader, now, device)
+    print("finished"+model[i])
 # %%
