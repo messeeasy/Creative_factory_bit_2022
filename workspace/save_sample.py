@@ -65,23 +65,23 @@ df.head()
 data=[]
 for path in df['path']:
     data_x,data_fs=data_arrange.datalode(path)
-    #data_std,me,st=noise_delet.standard_deviation(data_x,2)
+    data_std,me,st=noise_delet.standard_deviation_np(data_x,4)
     
-    fp_high = 90       #通過域端周波数[Hz]
-    fs_high = 60      #阻止域端周波数[Hz]
-    gpass_high = 5       #通過域端最大損失[dB]
-    gstop_high = 40      #阻止域端最小損失[dB]
+    fp = 90       #通過域端周波数[Hz]
+    fs = 60      #阻止域端周波数[Hz]
+    gpass = 5       #通過域端最大損失[dB]
+    gstop = 40      #阻止域端最小損失[dB]
  
-    #data_hig = noise_delet.highpass(data_std, data_fs, fp_high, fs_high, gpass_high, gstop_high)
+    data_hig = noise_delet.highpass(data_std, data_fs, fp, fs, gpass, gstop)
 
-    fp_low = 300       #通過域端周波数[Hz]kotei
-    fs_low = 1000      #阻止域端周波数[Hz]
-    gpass_low = 5     #通過域端最大損失[dB]
-    gstop_low = 40      #阻止域端最小損失[dB]kotei
+    fp = 120       #通過域端周波数[Hz]kotei
+    fs = 500      #阻止域端周波数[Hz]
+    gpass = 5     #通過域端最大損失[dB]
+    gstop = 20      #阻止域端最小損失[dB]kotei
  
  
-    #data_low = noise_delet.lowpass(data_std, data_fs, fp_low, fs_low, gpass_low, gstop_low)
-    data.append(data_x)
+    data_low = noise_delet.lowpass(data_std, data_fs, fp, fs, gpass, gstop)
+    data.append(data_hig)
     #noise_delet.save_heart_sound(data_x,data_fs,path)
     #print(data_low.shape)
 
@@ -96,8 +96,8 @@ data_train,data_test,data_train_path,data_test_path= train_test_split(data,df['p
 #In this case, data_K_split becomes data_k_split[*1][*2][*3]. *1:number of K splits, *2:number of trains per one after splitting, *3:one data
 
 #%%
-k=5
-data_K_split=k_fold.k_fold(data_train,k)
+k=6
+data_K_split,y=k_fold.k_fold(data_train,[],k)
 print(data_K_split[0].shape)
 
 #%%[markdown]
@@ -107,7 +107,7 @@ print(data_K_split[0].shape)
 #Since we have long data here, we split the data by L. The remainder of the split is truncated.
 #And store the list in split_num for future use of what data and how many splits.
 #%%
-L=10000
+L=15000
 
 data_L_split,split_num=data_arrange.L_split(data_K_split,L)
 

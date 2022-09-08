@@ -1,22 +1,16 @@
-#%%[markdown]
-##import library
 #%%
-
-from statistics import mean
 import numpy as np
 import wave
 import pandas as pd
 import matplotlib.pyplot as plt
 import os 
 import scipy.io.wavfile as wf
-import FC_fucntion
+import FC_fucntion 
 from scipy.signal import kaiserord, lfilter, firwin
 from scipy.fftpack import fft
 
-from scipy.io import wavfile
 from sklearn.svm import SVC
 from scipy.signal import spectrogram
-from matplotlib import pyplot as plt
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 from sklearn.neural_network import MLPClassifier
@@ -25,35 +19,56 @@ from pathlib import Path
 
 import glob
 import itertools
-import numpy as np
-import pandas as pd
-import tensorflow as tf
+#import tensorflow as tf
 import random
+
 import torch
 import torch.nn as nn
-import torch.optim as optim
-
-import data_arrange
-import noise_delet
 import k_fold
-import models
+import noise_delet
+import data_arrange
 import train
-import data_augment
 import plot
+import librosa
+import librosa.display
 import data_augment
-#%%
-#パラメータ調整
-k=5
-L=10000
-model = ['CNN_conv1D','CNN_conv2D']
+# ------------------ noise del hyper param ---------------------
+std_scale = 2
+fp_l = 300       #通過域端周波数[Hz]kotei
+fs_l = 1000      #阻止域端周波数[Hz]
+gpass_l = 5     #通過域端最大損失[dB]
+gstop_l = 40      #阻止域端最小損失[dB]kotei
+#L=10000
 
+length = [15000, 200, 250, 300, 350]
+delay = [0]
+std_scale = [2,2.5,3,3.5,4,4.5,5,5.5,6,7,8,9,10]
+fp_l = [300, 200, 300, 400, 500, 600, 700, 800, 900]
+fs_l = [1000, 150, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
+gpass_l = [3, 5, 7]
+gstop_l = [20, 30, 40, 50]
+n_fft = 5000
+hop_length = 360
+param_noise = list(itertools.product(length, delay, std_scale, fp_l, fs_l, gpass_l, gstop_l))
+param_noise = [p for p in param_noise if p[3] < p[4]]
+# -------------------------------------------------------------
+#%%
+EPOCH = 50
+BATCH_SIZE=30
+#WEIGHT_DECAY = 0.1
+LEARNING_RATE = 0.5
+k=2
+L=10000
+model = ['CNN_conv1D','CNN_conv2D','CNN_conv2D_melspect']
+#%%
 #%%
 df=data_arrange.get_path()
 
 data=data_arrange.get_data(df)
 #%%
 y=data_arrange.get_label(df)
-#%%
+
+
 data_train,data_test, y_train, y_test,data_train_path,data_test_path= train_test_split(data,y,df['path'].values,train_size = 0.8, test_size=0.2)
 del df,data,y
 #%%
@@ -74,14 +89,18 @@ data_filter_after=[]
 for data_x in data_L_split:
     data_filter_after.append(noise_delet.filter_processing(np.array(data_x),4000))
 del data_L_split
-
+#----------------------------------------------------
 #%%
-select_data=data_augment.get_select_PCG(data_filter_after,model)
-
+select_data,select_label=data_augment.get_select_PCG_2(data_filter_after,y_L_split,model)
+# %%
+print(len(select_data[2][0]))
+#%%
+print(len(select_label[2][0]))
+#%%
+data_augment.show_melsp(np.array(select_data[2][0][0]),4000)
 #%%
 
 for i in range(len(model)):
-
     if model[i]=='CNN_conv2D':
 
         in_channel = 10
@@ -97,11 +116,18 @@ for i in range(len(model)):
         strides = [1,1,1,1,1,1]
         pool_strides = [2,2,2,2,2,2]
         dropout_para = [0.2,0.2,0.2,0.2,0.2,0.2]
+    elif model[i]=='CNN_conv2D_melspect':
+        in_channel = 1 # メルスペクトの値を取るだけの軸なので
+        filter_num = [8, 16, 32] # 参考資料の半分の半分
+        filter_size = [4, 8, 16, 32, 8]
+        strides = [1,1] #　固定
+        pool_strides = [1,1,1,1,1,1] #不使用
+        dropout_para = [0.3, 0.4, 0.5, 0.6, 0.7]
 
     lr = 0.01
     epoch = 50
     BATCH_SIZE=20
-    df_fold=data_augment.create_df_k(k,select_data[i],y_L_split)
+    df_fold=data_augment.create_df_k(k,select_data[i],select_label[i])
 
     for fold in range(k):
         trainloader,testloader=data_augment.model_setting_dataset(df_fold,fold,BATCH_SIZE,model[i])
@@ -118,4 +144,4 @@ for i in range(len(model)):
         now = plot.evaluate_history(history)
         plot.test_result(net, test_loader, now, device)
     print("finished"+model[i])
-# %%
+

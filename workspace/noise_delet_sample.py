@@ -72,7 +72,7 @@ plt.figure(figsize=(6,6))
 p,v=FC_fucntion.fft_k(data, data_fs, 1000)
 plt.plot(v,p)
 # %%
-data_std,data_mean,data_st=noise_delet.standard_deviation_np(data,2)
+data_std,data_mean,data_st=noise_delet.standard_deviation_np(data,4)
 
 fp = 90       #通過域端周波数[Hz]
 fs = 60      #阻止域端周波数[Hz]
@@ -81,12 +81,12 @@ gstop = 40      #阻止域端最小損失[dB]
  
 data_hig = noise_delet.highpass(data_std, data_fs, fp, fs, gpass, gstop)
 
-fp = 200       #通過域端周波数[Hz]kotei
-fs = 400      #阻止域端周波数[Hz]
+fp = 120       #通過域端周波数[Hz]kotei
+fs = 500      #阻止域端周波数[Hz]
 gpass = 5     #通過域端最大損失[dB]
-gstop = 40      #阻止域端最小損失[dB]kotei
+gstop = 20      #阻止域端最小損失[dB]kotei
  
-data_low = noise_delet.lowpass(data_hig, data_fs, fp, fs, gpass, gstop)
+data_low = noise_delet.lowpass(data_std, data_fs, fp, fs, gpass, gstop)
 
 #data_fpass=FC_fucntion.FpassBand_1(data,data_fs,100,800)
 

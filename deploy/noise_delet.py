@@ -53,7 +53,7 @@ def lowpass(x, samplerate, fp, fs, gpass, gstop):
 def filter_processing(data,data_fs):
     data_after=[]
     for data_x in data:
-        data_std,me,st=standard_deviation_np(data_x,2)
+        data_std,me,st=standard_deviation_np(data_x,4)
     
         fp_high = 90       #通過域端周波数[Hz]
         fs_high = 60      #阻止域端周波数[Hz]
@@ -62,14 +62,14 @@ def filter_processing(data,data_fs):
  
         data_hig = highpass(data_std, data_fs, fp_high, fs_high, gpass_high, gstop_high)
 
-        fp_low = 300       #通過域端周波数[Hz]kotei
-        fs_low = 1000      #阻止域端周波数[Hz]
-        gpass_low = 5     #通過域端最大損失[dB]
-        gstop_low = 40      #阻止域端最小損失[dB]kotei
+        fp = 120       #通過域端周波数[Hz]kotei
+        fs = 500      #阻止域端周波数[Hz]
+        gpass = 5     #通過域端最大損失[dB]
+        gstop = 20      #阻止域端最小損失[dB]kotei
  
  
-        #data_low = lowpass(data_std, data_fs, fp_low, fs_low, gpass_low, gstop_low)
-        data_after.append(data_hig)
+        data_low = lowpass(data_std, data_fs, fp, fs, gpass, gstop)
+        data_after.append(data_low)
     #noise_delet.save_heart_sound(data_x,data_fs,path)
     #print(data_low.shape)
     return np.array(data_after)

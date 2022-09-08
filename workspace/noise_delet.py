@@ -104,7 +104,13 @@ def save_heart_sound_train(data,data_fs,L,path,train_test,K,K_num,num):
     
     if not os.path.exists(file):
         os.makedirs(file)
+
+
+
     file2=os.path.join(file,"train_"+str(K_num))
+    if not os.path.exists(file2):
+        os.makedirs(file2)
+    file2=os.path.join(file2,filename)
     if not os.path.exists(file2):
         os.makedirs(file2)
     sf.write(os.path.join(file2,filename+"_"+basename_without_ext+"_L"+str(L)+"_"+str(num)+".wav"),data, data_fs)
@@ -119,7 +125,9 @@ def save_heart_sound_test(data,data_fs,L,path,train_test,K):
     
     if not os.path.exists(file):
         os.makedirs(file)
-    
+    file=os.path.join(file,filename)
+    if not os.path.exists(file):
+        os.makedirs(file)
     sf.write(os.path.join(file,filename+"_"+basename_without_ext+".wav"),data, data_fs)
 
 def sava_Lsplit_heart_sound(data_L,split_num,L,data_fs,data_path,train_test):
