@@ -3,13 +3,13 @@ from scipy import signal
 import numpy as np
 import soundfile as sf
 import os
-def standard_deviation(data,N=1,device=torch.device('cuda:0')):
-    data = torch.cuda.FloatTensor(data, device=device)
+def standard_deviation(data,N=1):
+    data = torch.FloatTensor(data)
     data_mean=torch.mean(abs(data))
     data_std=torch.std(abs(data))
     #print(data_std)
     #print(data_mean)
-# ここが遅い
+
     for i in range(len(data)):
 
         if abs(data[i])>N*data_std:
@@ -18,7 +18,20 @@ def standard_deviation(data,N=1,device=torch.device('cuda:0')):
             else:
                 data[i]=-1*data_mean
         
-    return data.to("cpu").numpy(),data_mean,data_std
+    return np.array(data),data_mean,data_std
+def standard_deviation_np(data,N=1):
+    data=np.array(data)
+    #data = torch.FloatTensor(data)
+    data_mean=np.mean(abs(data))
+    data_std=np.std(abs(data))
+    #print(data_std)
+    #print(data_mean)
+    
+
+    data[data>N*data_std]=data_mean
+    data[data<-1*N*data_std]=-1*data_mean
+
+    return data,data_mean,data_std
 
 def highpass(x, samplerate, fp, fs, gpass, gstop):
     fn = samplerate / 2                           #ナイキスト周波数
@@ -36,6 +49,32 @@ def lowpass(x, samplerate, fp, fs, gpass, gstop):
     b, a = signal.butter(N, Wn, "low")            #フィルタ伝達関数の分子と分母を計算
     y = signal.filtfilt(b, a, x)                  #信号に対してフィルタをかける
     return y                                      #フィルタ後の信号を返す
+
+def filter_processing(data,data_fs):
+    data_after=[]
+    for data_x in data:
+        data_std,me,st=standard_deviation_np(data_x,2)
+    
+        fp_high = 90       #通過域端周波数[Hz]
+        fs_high = 60      #阻止域端周波数[Hz]
+        gpass_high = 5       #通過域端最大損失[dB]
+        gstop_high = 40      #阻止域端最小損失[dB]
+ 
+        data_hig = highpass(data_std, data_fs, fp_high, fs_high, gpass_high, gstop_high)
+
+        fp_low = 300       #通過域端周波数[Hz]kotei
+        fs_low = 1000      #阻止域端周波数[Hz]
+        gpass_low = 5     #通過域端最大損失[dB]
+        gstop_low = 40      #阻止域端最小損失[dB]kotei
+ 
+ 
+        #data_low = lowpass(data_std, data_fs, fp_low, fs_low, gpass_low, gstop_low)
+        data_after.append(data_hig)
+    #noise_delet.save_heart_sound(data_x,data_fs,path)
+    #print(data_low.shape)
+    return np.array(data_after)
+
+#%%
 
 def save_heart_sound(data,data_fs,path):
     
