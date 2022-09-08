@@ -115,7 +115,7 @@ for path in df['path']:
         # 周波数変換コード　使わないとき除く
         #data = get_PCG_noise_del(data, data_fs)
         melsp = calculate_melsp(data)
-        dataset_all.append(data)
+        dataset_all.append(melsp)
 show_melsp(dataset_all[0])
 # dataset(N, C=128, W =1, H =118)　Hは音の長さによって変わる。今回は15000でそろえている
 
