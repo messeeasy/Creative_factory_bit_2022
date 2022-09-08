@@ -19,6 +19,19 @@ def standard_deviation(data,N=1):
                 data[i]=-1*data_mean
         
     return np.array(data),data_mean,data_std
+def standard_deviation_np(data,N=1):
+    data=np.array(data)
+    #data = torch.FloatTensor(data)
+    data_mean=np.mean(abs(data))
+    data_std=np.std(abs(data))
+    #print(data_std)
+    #print(data_mean)
+    
+
+    data[data>N*data_std]=data_mean
+    data[data<-1*N*data_std]=-1*data_mean
+
+    return data,data_mean,data_std
 
 def highpass(x, samplerate, fp, fs, gpass, gstop):
     fn = samplerate / 2                           #ナイキスト周波数
@@ -40,7 +53,7 @@ def lowpass(x, samplerate, fp, fs, gpass, gstop):
 def filter_processing(data,data_fs):
     data_after=[]
     for data_x in data:
-        data_std,me,st=standard_deviation(data_x,2)
+        data_std,me,st=standard_deviation_np(data_x,2)
     
         fp_high = 90       #通過域端周波数[Hz]
         fs_high = 60      #阻止域端周波数[Hz]

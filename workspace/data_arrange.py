@@ -3,6 +3,7 @@ import numpy as np
 import os
 import pandas as pd
 import glob
+import FC_fucntion
 def get_path():
     if os.name=='posix':
         dataset = [{'path': path, 'label': path.split('/' )[3] } for path in glob.glob("../dataset_heart_sound/AV/*/*.wav")]
@@ -96,3 +97,37 @@ def L_split_add(data,y,L=10000):
     return np.array(data_L_split),np.array(y_label),split_num
 
 
+def cal_PCG(data,Fs1=4000):
+    
+    data_=[]
+    for data2 in data:
+       
+        data2 = FC_fucntion.vec_nor(np.array(data2))
+        pcgFFT1, vTfft1 = FC_fucntion.fft_k_N(data2, Fs1, 1000)
+
+        E_PCG,C = FC_fucntion.E_VS_100(pcgFFT1, vTfft1, 'percentage')
+        #pcgFFT1=np.array(pcgFFT1)
+        #test2.pyでどのように分けられているかをグラフで確認できます。
+        kari_list=[]
+        for i in range(len(C)-1):
+            #np.append(kari_list,vTfft1[C[i]:C[i+1]])
+            #print(pcgFFT1[C[i]:C[i+1]])
+            
+            #np.append(kari_list,pcgFFT1[C[i]:C[i+1]])
+            kari_list.append(pcgFFT1[C[i]:C[i+1]])
+        #print(kari_list)
+        #np.append(data,kari_list,axis=0)
+        df = pd.DataFrame(np.array(kari_list).T,
+                  columns=['filter'],)
+        max_length = max(df['filter'].apply(len))
+        #print(max_length)
+        df['filter'] = df['filter'].apply(repeat_to_length, length=max_length)
+        data_.append(np.stack(df['filter'].values, axis=0))
+    return data_
+
+def get_PCG(data_L_split):
+    
+    data_PCG=[]
+    for data in data_L_split:
+        data_PCG.append(cal_PCG(data,4000))
+    return data_PCG
