@@ -32,9 +32,10 @@ import plot
 import librosa
 import librosa.display
 
+
 #%%
 EPOCH = 50
-BATCH_SIZE=30
+BATCH_SIZE=20
 #WEIGHT_DECAY = 0.1
 LEARNING_RATE = 0.5
 #%%
@@ -42,11 +43,9 @@ LEARNING_RATE = 0.5
 if os.name=='posix':
     dataset = [{'path': path, 'label': path.split('/' )[3] } for path in glob.glob("../dataset_heart_sound/AV_param/*/*.wav")]
 else:
-    dataset = [{'path': path, 'label': path.split('\\' )[3] } for path in glob.glob("..\dataset_heart_sound\AV_param\**\*.wav")]
+    dataset = [{'path': path, 'label': path.split('\\' )[3] } for path in glob.glob("..\dataset_heart_sound\AV\**\*.wav")]
 
-#%%
 df = pd.DataFrame.from_dict(dataset)
-
 df.head()
 #%%
 # Add a column to store the data read from each wavfile...   
@@ -106,23 +105,28 @@ melsp = calculate_melsp(data)
 # %%
 # ------------------------ データ前処理 --------------------------
 dataset_all = []
+
 for path in df['path']:
         # 長さを調節するため、いったんコメントアウト
         #data,data_fs=data_arrange.datalode(path)
         data,data_fs=datalode(path,param[0],param[1])
-        data,me,st=noise_delet.standard_deviation(data, param[2])
+        data,me,st=noise_delet.standard_deviation_np(data, param[2])
         data = noise_delet.lowpass(data, data_fs, param[3], param[4], param[5], param[6])
         # 周波数変換コード　使わないとき除く
         #data = get_PCG_noise_del(data, data_fs)
         melsp = calculate_melsp(data)
         dataset_all.append(melsp)
-show_melsp(dataset_all[0])
+        
+#%%
+dataset_all = np.array(dataset_all)
+print(dataset_all.shape)
+show_melsp(dataset_all[1],4000)
 # dataset(N, C=128, W =1, H =118)　Hは音の長さによって変わる。今回は15000でそろえている
 
 # %%
 # -------------------- pytorch make dataset -------------------------
 # all_dfの意味とその代替
-Y = np.stack(all_df['label'].values, axis=0)
+Y = np.stack(df['label'].values, axis=0)
 y=np.zeros(len(Y))
 for i in range(len(Y)):
     if Y[i]=='normal':
@@ -131,11 +135,58 @@ for i in range(len(Y)):
         y[i]=1
         
 y=np.array(y)
+#%%
+len(dataset_all[0][0])
+#%%
 dataset_all = np.array(dataset_all)
-x=dataset_all[:,:,np.newaxis,:]
+x=dataset_all[:,np.newaxis,:,:]
 
 x = torch.FloatTensor(x)
 y = torch.LongTensor(y)
-# ------------------------------------------------------------------
+
 # %%
-# --- モデルでの学習 -----
+x_train, x_test, y_train, y_test, train_filenames, test_filenames = train_test_split(x, y, df['path'].values, train_size = 0.7, test_size=0.3)
+#print("x_train: {0}, x_test: {1}".format(x_train.shape, x_test.shape))
+del x,y
+
+#%%
+train_dataset = torch.utils.data.TensorDataset(x_train, y_train)
+test_dataset = torch.utils.data.TensorDataset(x_test, y_test)
+
+X_sample, y_sample = train_dataset[0]
+print(X_sample.size(), y_sample.size())
+
+#%%
+
+trainloader = torch.utils.data.DataLoader(train_dataset, batch_size = BATCH_SIZE,
+                        shuffle = True, num_workers = 0) #Windows Osの方はnum_workers=1 または 0が良いかも
+testloader = torch.utils.data.DataLoader(test_dataset, batch_size = BATCH_SIZE,
+                        shuffle = False, num_workers = 0) #Windows Osの方はnum_workers=1 または 0が良いかも
+
+# %%
+# ------------------------- hyper param -----------------------------
+model = 'CNN_conv2D_melspect'
+in_channel = 1 # メルスペクトの値を取るだけの軸なので
+filter_num = [16, 32, 64] # 参考資料の半分
+filter_size = [4, 8, 16, 32, 8]
+strides = [1,1]
+pool_strides = [1,1,1,1,1,1] #不使用
+dropout_para = [0.2, 0.3, 0.4, 0.5, 0.6]
+lr = 0.0001
+epoch = 100
+train_loader = trainloader
+val_loader = testloader # 本来はTrainの中のK個のうちのどれか
+test_loader = testloader
+# -------------------------------------------------------------------
+
+device = torch.device("cuda:0")
+net = train.model_setting_cnn(model, in_channel, filter_num, filter_size, strides, pool_strides, dropout_para, device)
+history, net = train.training(net, lr, epoch, train_loader, val_loader, device)
+
+print(x_train.shape)
+print(x_test.shape)
+print(net)
+
+#%%
+now = plot.evaluate_history(history)
+plot.test_result(net, test_loader, now, device)

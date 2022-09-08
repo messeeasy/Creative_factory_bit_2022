@@ -91,6 +91,110 @@ class CNN_conv2D(nn.Module):
         return x
 
 
+class CNN_conv2D_melspect(nn.Module):
+    def __init__(self, in_channel, filter_num, filter_size, strides, pool_strides, dropout_para):
+        super(CNN_conv2D_melspect, self).__init__()
+        
+        self.x_1 = nn.Sequential(
+            nn.Conv2d(in_channel, filter_num[0], (1,filter_size[0]), padding = (0, (filter_size[0]-1)//2), stride=(strides[0], strides[1])),
+            nn.ReLU(),
+            nn.BatchNorm2d(filter_num[0]),
+            nn.Dropout(dropout_para[0]),
+            nn.Conv2d(filter_num[0], filter_num[0], (filter_size[0],1), padding = ((filter_size[0]-1)//2, 0), stride=(strides[1], strides[0])),
+            nn.ReLU(),
+            nn.BatchNorm2d(filter_num[0]),
+            nn.Dropout(dropout_para[0]),
+            nn.Conv2d(filter_num[0], filter_num[1], (1,filter_size[0]), padding = (0, (filter_size[0]-1)//2), stride=(strides[0], strides[1])),
+            nn.ReLU(),
+            nn.BatchNorm2d(filter_num[1]),
+            nn.Dropout(dropout_para[0]),
+            nn.Conv2d(filter_num[1], filter_num[1], (filter_size[0],1), padding = ((filter_size[0]-1)//2, 0), stride=(strides[1], strides[0])),
+            nn.ReLU(),
+            nn.BatchNorm2d(filter_num[1]),
+            nn.Dropout(dropout_para[0])
+        )
+        self.x_2 = nn.Sequential(
+            nn.Conv2d(in_channel, filter_num[0], (1,filter_size[1]), padding = (0, (filter_size[1]-1)//2), stride=(strides[0], strides[1])),
+            nn.ReLU(),
+            nn.BatchNorm2d(filter_num[0]),
+            nn.Dropout(dropout_para[1]),
+            nn.Conv2d(filter_num[0], filter_num[0], (filter_size[1],1), padding = ((filter_size[1]-1)//2, 0), stride=(strides[1], strides[0])),
+            nn.ReLU(),
+            nn.BatchNorm2d(filter_num[0]),
+            nn.Dropout(dropout_para[1]),
+            nn.Conv2d(filter_num[0], filter_num[1], (1,filter_size[1]), padding = (0, (filter_size[1]-1)//2), stride=(strides[0], strides[1])),
+            nn.ReLU(),
+            nn.BatchNorm2d(filter_num[1]),
+            nn.Dropout(dropout_para[1]),
+            nn.Conv2d(filter_num[1], filter_num[1], (filter_size[1],1), padding = ((filter_size[1]-1)//2, 0), stride=(strides[1], strides[0])),
+            nn.ReLU(),
+            nn.BatchNorm2d(filter_num[1]),
+            nn.Dropout(dropout_para[1])
+        )
+        self.x_3 = nn.Sequential(
+            nn.Conv2d(in_channel, filter_num[0], (1,filter_size[2]), padding = (0, (filter_size[2]-1)//2), stride=(strides[0], strides[1])),
+            nn.ReLU(),
+            nn.BatchNorm2d(filter_num[0]),
+            nn.Dropout(dropout_para[2]),
+            nn.Conv2d(filter_num[0], filter_num[0], (filter_size[2],1), padding = ((filter_size[2]-1)//2, 0), stride=(strides[1], strides[0])),
+            nn.ReLU(),
+            nn.BatchNorm2d(filter_num[0]),
+            nn.Dropout(dropout_para[2]),
+            nn.Conv2d(filter_num[0], filter_num[1], (1,filter_size[2]), padding = (0, (filter_size[2]-1)//2), stride=(strides[0], strides[1])),
+            nn.ReLU(),
+            nn.BatchNorm2d(filter_num[1]),
+            nn.Dropout(dropout_para[2]),
+            nn.Conv2d(filter_num[1], filter_num[1], (filter_size[2],1), padding = ((filter_size[2]-1)//2, 0), stride=(strides[1], strides[0])),
+            nn.ReLU(),
+            nn.BatchNorm2d(filter_num[1]),
+            nn.Dropout(dropout_para[2])
+        )
+        self.x_4 = nn.Sequential(
+            nn.Conv2d(in_channel, filter_num[0], (1,filter_size[3]), padding = (0, (filter_size[3]-1)//2), stride=(strides[0], strides[1])),
+            nn.ReLU(),
+            nn.BatchNorm2d(filter_num[0]),
+            nn.Dropout(dropout_para[3]),
+            nn.Conv2d(filter_num[0], filter_num[0], (filter_size[3],1), padding = ((filter_size[3]-1)//2, 0), stride=(strides[1], strides[0])),
+            nn.ReLU(),
+            nn.BatchNorm2d(filter_num[0]),
+            nn.Dropout(dropout_para[3]),
+            nn.Conv2d(filter_num[0], filter_num[1], (1,filter_size[3]), padding = (0, (filter_size[3]-1)//2), stride=(strides[0], strides[1])),
+            nn.ReLU(),
+            nn.BatchNorm2d(filter_num[1]),
+            nn.Dropout(dropout_para[3]),
+            nn.Conv2d(filter_num[1], filter_num[1], (filter_size[3],1), padding = ((filter_size[3]-1)//2, 0), stride=(strides[1], strides[0])),
+            nn.ReLU(),
+            nn.BatchNorm2d(filter_num[1]),
+            nn.Dropout(dropout_para[3])
+        )
+        self.after_add = nn.Sequential(
+            nn.Conv2d(filter_num[1], filter_num[2], (1,filter_size[4]), padding = (0, (filter_size[2]-1)//2), stride=(strides[0], strides[1])),
+            nn.ReLU(),
+            nn.BatchNorm2d(filter_num[2]),
+            nn.Dropout(dropout_para[4]),
+            nn.Conv2d(filter_num[2], filter_num[2], (filter_size[4],1), padding = ((filter_size[2]-1)//2, 0), stride=(strides[1], strides[0])),
+            nn.ReLU(),
+            nn.BatchNorm2d(filter_num[2]),
+            nn.Dropout(dropout_para[4]),
+            nn.AdaptiveAvgPool2d((1,1)),
+            nn.Flatten(),
+            nn.Linear(filter_num[2],2)
+        )
+        
+        
+    def forward(self, x):
+        x_1 = self.x_1(x)
+        x_2 = self.x_2(x)
+        x_3 = self.x_3(x)
+        x_4 = self.x_4(x)
+        # concat?
+        x = torch.add(x_1, x_2)
+        x = torch.add(x, x_3)
+        x = torch.add(x, x_4)
+        x = self.after_add(x) 
+        
+        return x
+
 # input_shape=(N, L, C)?
 # 入力参照 : https://qiita.com/sloth-hobby/items/93982c79a70b452b2e0a, https://aidiary.hatenablog.com/entry/20180902/1535887735
 
