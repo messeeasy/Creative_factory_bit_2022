@@ -22,11 +22,14 @@ Link:
 Below is the current progress (will be updated as needed)  
 <br>
 ・SVM, MLP, CNN based model training  
-・LSTM-based training (using mcff features)  
-・CNN-based training (using mel-spectrogram features)  
-・Frequency Analysis  
-・Learning with SVM, MLP, and CNN-based models on frequency-converted data  
-・Learning with 2D CNN-based models  
+・CNN-based learning with mel-spectrogram features   
+・frequency analysis   
+・Training with SVM, MLP, and CNN-based models on Fourier transformed data  
+・Learning using Fourier transform for CNN-based models in 2D  
+・LSTM-based training (using mcff features)   
+・Delete noise  
+・Data augmete the data set (adding white noise data and sliding data)  
+・Learning using melspectograms for CNN-based models in 2D  
 <br>
 Each file name, etc., should be modified for clarity. 
 <br>
@@ -54,7 +57,8 @@ Creative_factory_bit_2022<br>
 '-- workspace/<br>
 
 See requirements.txt for the libraries currently in use.<br>
-### Correspondence table for each file (to be added later)<br>
+### Correspondence table for each file <br>
+
 | File name | Detail | 
 | :---------:| :------------------ |
 | data_arrange.py | Loading and sizing audio files | 
@@ -69,6 +73,11 @@ See requirements.txt for the libraries currently in use.<br>
 | train.py | Setting of learning parameters |  
 <br>
 
+Each file name, etc., should be modified for clarity.<br>
+The files we created are in the deploy folder. <br>
+_exe.py is the executable file for each method.<br>
+_sample.py is the test file for each function.<br>
+Others are function files.<br>
 The CNN_demo folder is the ipynb file in Audio Classification ANN CNN Keras/References is the demo file.  
 <br>
 
@@ -99,7 +108,7 @@ A plot of the heart sound data for the current data set shows the following vari
 The frequency of heart sounds is less than 1 kHz, and the main component is about 100 Hz, while heart murmurs are relatively high frequency and are often found above 200 Hz compared to I and II sounds. Therefore, frequency analysis is used to analyze abnormal heart sounds.  <br>
 [Ref 1: Sorry for Japanese. I think you can find it if you look for it.](https://www.cst.nihon-u.ac.jp/research/gakujutu/53/pdf/M-20.pdf)  <br>
  
-Noise removed.<br>
+### Noise removed
 The mean and standard deviation of each signal were determined, and values greater than N (currently N=4) times the standard deviation were replaced with the mean value.
 <br>
 
