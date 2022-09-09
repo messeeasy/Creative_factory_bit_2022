@@ -57,16 +57,16 @@ See requirements.txt for the libraries currently in use.<br>
 ### Correspondence table for each file (to be added later)<br>
 | File name | Detail | 
 | :---------:| :------------------ |
-| data_arrange.py | 音声ファイルの読み込みやサイズ調整 | 
-| data_augment.py | pytorchでのデータセットを作る<br>ホワイトノイズデータセット、シフトデータセットの作成<br>特徴量変換| 
-| FC_function.py | フーリエ変換 |
-| generate_param.py | ハイパーパラメータの組み合わせを生成 |
-| k_fold.py | TrainデータセットをK分割 |  
-| models.py | 学習モデルの呼び出し |  
-| noise_delete.py | ノイズ除去 | 
-| plot.py | 学習結果の保存・出力 |
-| self_adjust_noise.py | ノイズ除去のパラーメタ調整＆効果を確認 | 
-| train.py | 学習パラメータの設定 |  
+| data_arrange.py | Loading and sizing audio files | 
+| data_augment.py | Make dataset using pytorch<br>Make White noise dataset and shift dataset<br>Convert feature| 
+| FC_function.py | Convert to Fourier |
+| generate_param.py | Generate hyperparameter combinations |
+| k_fold.py | Train dataset divided into K parts |  
+| models.py | Calling the learning model |  
+| noise_delete.py | Delete noise | 
+| plot.py | Save and output result about learning |
+| self_adjust_noise.py | Adjust parrameters for noise reduction & check the effect | 
+| train.py | Setting of learning parameters |  
 <br>
 
 The CNN_demo folder is the ipynb file in Audio Classification ANN CNN Keras/References is the demo file.  
@@ -74,13 +74,14 @@ The CNN_demo folder is the ipynb file in Audio Classification ANN CNN Keras/Refe
 
 ## Result
 ---
-We trained a demo file (SVM, MLP, CNN_conv1D) of heartbeat classification that we found on GIthub on our dataset.
-In this training, the training data is still a signal, so we performed a Fourier transform.
-To change the convolution method, we transformed 0~1000Hz of the Fourier transformed data to (10*100) and trained with a 2-dimensional CNN.
+We trained a demo file (SVM, MLP, CNN_conv1D) of heartbeat classification that we found on GIthub on our dataset.  
+In this training, the training data is still a signal, so we performed a Fourier transform.  
+To change the convolution method, we transformed 0~1000Hz of the Fourier transformed data to (10*100) and trained with a 2-dimensional CNN.  
 Since the Fourier transform does not include time series, we trained a 2-D CNN using the mel-spectrogram, which uses the short-time Fourier transform, as the feature.<br>
 
 Training with Train is highly accurate, but training with val,Test is not stable, 40~60%. 
 Overlearning is occurring.<br>
+
 ![accuracy_20220909_044808](https://user-images.githubusercontent.com/52558553/189246781-83731220-734b-42cc-bb98-6f71b4768a14.png)
 ![loss_20220909_044808](https://user-images.githubusercontent.com/52558553/189246998-fab8e099-f70f-4e9e-95af-619e1cca226e.png)
 ![test_confusion_20220909_044808](https://user-images.githubusercontent.com/52558553/189246807-e6d91e99-3b89-4aa6-94c6-f937ea8c1288.png)
