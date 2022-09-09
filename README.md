@@ -57,8 +57,16 @@ See requirements.txt for the libraries currently in use.<br>
 ### Correspondence table for each file (to be added later)<br>
 | File name | Detail | 
 | :---------:| :------------------ |
-| `` | Demo | 
-| `` | Demo | 
+| data_arrange.py | 音声ファイルの読み込みやサイズ調整 | 
+| data_augment.py | pytorchでのデータセットを作る<br>ホワイトノイズデータセット、シフトデータセットの作成<br>特徴量変換| 
+| FC_function.py | フーリエ変換 |
+| generate_param.py | ハイパーパラメータの組み合わせを生成 |
+| k_fold.py | TrainデータセットをK分割 |  
+| models.py | 学習モデルの呼び出し |  
+| noise_delete.py | ノイズ除去 | 
+| plot.py | 学習結果の保存・出力 |
+| self_adjust_noise.py | ノイズ除去のパラーメタ調整＆効果を確認 | 
+| train.py | 学習パラメータの設定 |  
 <br>
 
 The CNN_demo folder is the ipynb file in Audio Classification ANN CNN Keras/References is the demo file.  
