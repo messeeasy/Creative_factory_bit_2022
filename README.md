@@ -34,8 +34,7 @@ Each file name, etc., should be modified for clarity.
 ## Execution Method 
 ---
 The Dataset should be placed in the root directory as 'dataset_heart_sound'.
-Please refer to the following for the contents of 'dataset_heart_sound'.  
-
+Please refer to the following for the contents of 'dataset_heart_sound'. <br>
 Creative_factory_bit_2022<br>
 |-- dataset_heart_sound/<br>
 |	|-- AV/<br>
@@ -67,68 +66,87 @@ The CNN_demo folder is the ipynb file in Audio Classification ANN CNN Keras/Refe
 
 ## Result
 ---
+We trained a demo file (SVM, MLP, CNN_conv1D) of heartbeat classification that we found on GIthub on our dataset.
+In this training, the training data is still a signal, so we performed a Fourier transform.
+To change the convolution method, we transformed 0~1000Hz of the Fourier transformed data to (10*100) and trained with a 2-dimensional CNN.
+Since the Fourier transform does not include time series, we trained a 2-D CNN using the mel-spectrogram, which uses the short-time Fourier transform, as the feature.<br>
+
+Training with Train is highly accurate, but training with val,Test is not stable, 40~60%. 
+Overlearning is occurring.<br>
+![accuracy_20220909_044808](https://user-images.githubusercontent.com/52558553/189246781-83731220-734b-42cc-bb98-6f71b4768a14.png)
+![loss_20220909_044808](https://user-images.githubusercontent.com/52558553/189246998-fab8e099-f70f-4e9e-95af-619e1cca226e.png)
+![test_confusion_20220909_044808](https://user-images.githubusercontent.com/52558553/189246807-e6d91e99-3b89-4aa6-94c6-f937ea8c1288.png)
+![ROCcurve_20220909_033001](https://user-images.githubusercontent.com/52558553/189246738-fc31f443-a2e7-4c44-97fa-9c197dfe196d.png)
+<br>
+
+When the executable file is run, the result is output as an image file in the output folder.<br>
+
 ### Data of heart sound
 A plot of the heart sound data for the current data set shows the following variation.<br>
 ![Screenshot from 2022-08-19 11-42-26](https://user-images.githubusercontent.com/52558553/187862288-c509ddaa-35cb-490a-be8a-abfcd6a65d64.png)
 ![Screenshot from 2022-08-19 11-44-07](https://user-images.githubusercontent.com/52558553/187862311-51a80084-e7c5-4da5-976c-1035ee6003ea.png)
 ![Screenshot from 2022-08-19 11-45-11](https://user-images.githubusercontent.com/52558553/187862326-5229c973-eba3-4a2d-a4c5-e61dea5d0e58.png)
 
-The frequency of heart sounds is less than 1 kHz, and the main component is about 100 Hz, while heart murmurs are relatively high frequency and are often found above 200 Hz compared to I and II sounds. Therefore, frequency analysis is used to analyze abnormal heart sounds.  
-[Ref 1: Sorry for Japanese. I think you can find it if you look for it.](https://www.cst.nihon-u.ac.jp/research/gakujutu/53/pdf/M-20.pdf)  
+The frequency of heart sounds is less than 1 kHz, and the main component is about 100 Hz, while heart murmurs are relatively high frequency and are often found above 200 Hz compared to I and II sounds. Therefore, frequency analysis is used to analyze abnormal heart sounds.  <br>
+[Ref 1: Sorry for Japanese. I think you can find it if you look for it.](https://www.cst.nihon-u.ac.jp/research/gakujutu/53/pdf/M-20.pdf)  <br>
  
-
-### These data were trained on below, but the accuracy are low  and unstable.    
-<br>
-・SVM, MLP, CNN based model training<br>
-・LSTM-based training (using mcff features)<br>  
-・CNN-based training (using mel-spectrogram features)<br>  
-・Training with SVM, MLP, and CNN-based models on frequency-converted data<br>  
-・Learning with 2D CNN-based models<br>  
+Noise removed.<br>
+The mean and standard deviation of each signal were determined, and values greater than N (currently N=4) times the standard deviation were replaced with the mean value.
 <br>
 
-Example:  
-![Screenshot from 2022-09-01 17-05-31](https://user-images.githubusercontent.com/52558553/187864502-3b8052d3-30ad-4a58-b3b8-cdd795c72446.png)
+Example of Noise Removal by Standard Deviation (N = 1) :  
+・Green is standard deviation  
+・Red is the mean  
+・Blue is original data  
+・Orange is after removal  
+
+![Screenshot from 2022-09-09 09-18-09](https://user-images.githubusercontent.com/52558553/189250422-5bf99322-f32a-4fbb-a502-fff10fe48823.png)
+![Screenshot from 2022-09-09 09-18-23](https://user-images.githubusercontent.com/52558553/189247431-56cf1b4e-7483-4ce9-9864-4d785f84d96c.png)
+
+A low-pass filter was used to set the pass-end frequency above 120 Hz, the stop-end frequency above 500 Hz, the maximum loss at the passband end at 5 dB, and the minimum loss at the stopband end at 20 dB.<br>  
+
+Noise reduction sample: normal/50214.wav
+![Screenshot from 2022-09-09 09-36-35](https://user-images.githubusercontent.com/52558553/189249048-988a2bf5-fae8-4520-9ee1-6ae6133af7a2.png)
+![Screenshot from 2022-09-09 09-39-19](https://user-images.githubusercontent.com/52558553/189249050-49c46211-add0-4b4b-9712-60f7d6558b38.png)
+<br>
+However, it was not quite accurate.
+Looking at other data, we found the following data.
+These files do not sound heartbeat properly.
+<br><br>
+Bad sample: normal/49653.wav
+<br>
+
+![Screenshot from 2022-09-09 09-46-31](https://user-images.githubusercontent.com/52558553/189249658-d56e7230-eabb-4597-8682-03af1df2342e.png)
+
 <br>
 
 ## Current problem
 ---
-### 1. Data size is too long   
-Dozens of heartbeats in one heartbeat file, so better to split them up for memory and learning purposes
-### 2. Lots of noise  
-When the audio file is checked, it is the sound of breathing, and some files contain the sound of a baby's cry.  
+### 1. Hyperparameters and multiple methods/models do not improve verification accuracy.
+Over-learning is occurring. It is not stable.
+### 2. malicious files exist in the dataset.
 <br>
+When the audio file is checked, it is the sound of breathing, or in some files, the sound of a baby's cry.  
+<br><br>
 
 ## Solution
 ---
-
-### 1.1 Split data and perform cross-validation methods
-### 2.1 Find the standard deviation of the signal and replace the time series with values of standard deviation*2 or 3 with the mean
-### 2.2 Use a high-pass filter or low-pass filter
+### 1.Exclude files from the data set that cannot be removed by noise reduction
+### 2.Further adjustment of hyperparameters
 <br>
 
 ## Future plans
 ---
 <br>
 
-1. Data segmentation  
-2. Noise removal  
-3. File organization  
-4. K-fold cross validation  
-5. Adding or modifying features  
-6. Adjusting model layers 
-7. Adjust hyperparameters 
-8. Create LSTM 2D model (if available) 
-9. Plot-image-based classification (if available)  
+1. hyper-parameter adjustment
+2. image-based classification
+3. removal of bad data
+4. summary of results  
+
 <br>
 
-| Schedule | 9/1 | 9/2 | 9/3 | 9/4 | 9/5 | 9/6 | 9/7 | 9/8 | 9/9 ~ |  
-|:-----------:|:-----------:|:-----------:|:-----------:|:-----------|:-----------:|:-----------:|:-----------:|:-----------|:-----------|  
-| Task number | 1, 2 | 2, 3 | 3, 4 | 5, 6, 7 | 6, 7 | 8, 9 | 9 | 9 | 7 |  
-<br>
 
 ## Information
 ---
-Currently, Iijima and Yamamoto are working on the project.  
-Also, Iijima has not progressed since he participated in an internship last week.  
-We will concentrate on the project until 9/8, so the result will be last minute.  
-Sorry.
+Sorry for the delay in working on this, but I will have a summary of the overall results up on github by 9/11.

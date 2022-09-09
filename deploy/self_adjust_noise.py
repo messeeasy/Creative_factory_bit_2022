@@ -25,7 +25,7 @@ import random
 import torch
 import torch.nn as nn
 import k_fold
-import noise_delet
+import noise_delete
 import data_arrange
 import train
 import plot
@@ -84,10 +84,10 @@ def show_melsp(melsp, fs):
 # ------------------ noise del hyper param ---------------------
 length = [150000]
 delay = [0]
-std_scale = [3] #信号の標準偏差のstd_scale倍以上の値を平均値に変換する
-fp_l = [300] #通過域端周波数[Hz]
-fs_l = [1000] #阻止域端周波数[Hz]
-gpass_l = [3] #通過域端最大損失[dB]
+std_scale = [4] #信号の標準偏差のstd_scale倍以上の値を平均値に変換する
+fp_l = [120] #通過域端周波数[Hz]
+fs_l = [500] #阻止域端周波数[Hz]
+gpass_l = [5] #通過域端最大損失[dB]
 gstop_l = [20]  #阻止域端最小損失[dB]
 # ---------------------------------------------------------------
 param_noise = list(itertools.product(length, delay, std_scale, fp_l, fs_l, gpass_l, gstop_l))
@@ -111,8 +111,8 @@ for i in dataset_index:
     # 長さを調節するため、いったんコメントアウト
     #data,data_fs=data_arrange.datalode(path)
     data,data_fs=datalode(path,param[0],param[1])
-    data_del,me,st=noise_delet.standard_deviation_np(data, param[2])
-    data_del = noise_delet.lowpass(data_del, data_fs, param[3], param[4], param[5], param[6])
+    data_del,me,st=noise_delete.standard_deviation_np(data, param[2])
+    data_del = noise_delete.lowpass(data_del, data_fs, param[3], param[4], param[5], param[6])
     # 周波数変換コード　使わないとき除く
     #data = get_PCG_noise_del(data, data_fs)
     melsp = calculate_melsp(data_del)

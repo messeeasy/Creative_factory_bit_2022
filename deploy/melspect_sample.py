@@ -25,7 +25,7 @@ import random
 import torch
 import torch.nn as nn
 import k_fold
-import noise_delet
+import deploy.noise_delete as noise_delete
 import data_arrange
 import train
 import plot
@@ -112,8 +112,8 @@ for path in df['path']:
         # 長さを調節するため、いったんコメントアウト
         #data,data_fs=data_arrange.datalode(path)
         data,data_fs=datalode(path,param[0],param[1])
-        data,me,st=noise_delet.standard_deviation_np(data, param[2])
-        data = noise_delet.lowpass(data, data_fs, param[3], param[4], param[5], param[6])
+        data,me,st=noise_delete.standard_deviation_np(data, param[2])
+        data = noise_delete.lowpass(data, data_fs, param[3], param[4], param[5], param[6])
         # 周波数変換コード　使わないとき除く
         #data = get_PCG_noise_del(data, data_fs)
         melsp = calculate_melsp(data, n_fft, hop_length)

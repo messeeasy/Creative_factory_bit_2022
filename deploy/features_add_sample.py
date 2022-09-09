@@ -34,7 +34,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 import data_arrange
-import noise_delet
+import deploy.noise_delete as noise_delete
 import k_fold
 import models
 import train
@@ -73,7 +73,7 @@ del data_K_split,y_K_split
 """ """
 data_filter_after=[]
 for data_x in data_L_split:
-    data_filter_after.append(noise_delet.filter_processing(np.array(data_x),4000))
+    data_filter_after.append(noise_delete.filter_processing(np.array(data_x),4000))
 del data_L_split
 
 #%%
