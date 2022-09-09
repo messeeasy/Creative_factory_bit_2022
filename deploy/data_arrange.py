@@ -9,7 +9,6 @@ def get_path():
         dataset = [{'path': path, 'label': path.split('/' )[3] } for path in glob.glob("../dataset_heart_sound/AV/*/*.wav")]
     else:
         dataset = [{'path': path, 'label': path.split('\\' )[3] } for path in glob.glob("..\dataset_heart_sound\AV\**\*.wav")]
-
     df = pd.DataFrame.from_dict(dataset)
     return df
 def get_df_x(df):

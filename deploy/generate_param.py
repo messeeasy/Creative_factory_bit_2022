@@ -47,4 +47,21 @@ print(len(param))
 print(param)
 # %%
 print(param[1][1])
+
+# %%
+# melspect_cnn_2d
+import numpy as np
+import itertools
+
+filter_num_list =  [[16, 32, 64],[8,16,32],[4,8,16],[2,4,8]]
+filter_size_list =  [[4, 8, 16, 32, 8],[4,8,16,32,16], [2,4,8,16,8], [8,16,32,64,16]]
+dropout_para_list = [[0.5, 0.5, 0.6, 0.6, 0.7],[0.4, 0.5, 0.6, 0.7, 0.8]]
+param_model = list(itertools.product(filter_num_list, filter_size_list, dropout_para_list))
+print(filter_num_list)
+print(filter_size_list)
+print(dropout_para_list)
+
+#%%
+print(param_model)
+print(len(param_model))
 # %%
