@@ -99,6 +99,7 @@ Overlearning is occurring.<br>
 
 <br>
 
+K = 5  
 AV  
 | Methods | Average(k) of Test acc | AUC |
 | :---------:| :------------------: | :------------------: |
