@@ -32,26 +32,6 @@ import plot
 import librosa
 import librosa.display
 import data_augment
-# ------------------ noise del hyper param ---------------------
-std_scale = 2
-fp_l = 300       #通過域端周波数[Hz]kotei
-fs_l = 1000      #阻止域端周波数[Hz]
-gpass_l = 5     #通過域端最大損失[dB]
-gstop_l = 40      #阻止域端最小損失[dB]kotei
-#L=10000
-
-length = [15000, 200, 250, 300, 350]
-delay = [0]
-std_scale = [2,2.5,3,3.5,4,4.5,5,5.5,6,7,8,9,10]
-fp_l = [300, 200, 300, 400, 500, 600, 700, 800, 900]
-fs_l = [1000, 150, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
-gpass_l = [3, 5, 7]
-gstop_l = [20, 30, 40, 50]
-n_fft = 5000
-hop_length = 360
-param_noise = list(itertools.product(length, delay, std_scale, fp_l, fs_l, gpass_l, gstop_l))
-param_noise = [p for p in param_noise if p[3] < p[4]]
-# -------------------------------------------------------------
 #%%
 EPOCH = 50
 BATCH_SIZE=30
@@ -59,7 +39,7 @@ BATCH_SIZE=30
 LEARNING_RATE = 0.5
 k=2
 L=10000
-model = ['CNN_conv1D','CNN_conv2D','CNN_conv2D_melspect']
+model = ['CNN_conv2D_melspect']
 #%%
 #%%
 df=data_arrange.get_path()
