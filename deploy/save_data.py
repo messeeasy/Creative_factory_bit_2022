@@ -75,7 +75,7 @@ for sp in spe:
 
     data_augmentation2,y_augment=data_augment.get_tt_augment(data_filter_after,y_L_split)
 
-    """ 
+    
     noise_delet.sava_Lsplit_heart_sound(data_augmentation2,split_num,L,4000,data_train_path,"train")
     noise_delet.sava_Lsplit_heart_sound(data_test,split_num,L,4000,data_test_path,"test")
     """
@@ -93,7 +93,7 @@ for sp in spe:
     
     
         return X_train,X_valid,y_train,y_valid
-
+    """ 
     """
     for fold in range(k):
         X_train,X_valid,y_train,y_valid=dataset(df_fold,fold,BATCH_SIZE=20)
@@ -118,6 +118,7 @@ for sp in spe:
         sns.heatmap(cm,annot=True, cbar=False, square=True, fmt="d")
         print("finished")
     """
+    """
     for fold in range(k):
         in_channel = 1
         filter_num = [4, 8, 16, 32, 64, 128]
@@ -141,3 +142,4 @@ for sp in spe:
         now = plot.evaluate_history(history)
         plot.test_result(net, test_loader, now, device)
         print("finished")
+    """
