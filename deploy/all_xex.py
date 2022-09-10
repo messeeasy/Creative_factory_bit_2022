@@ -103,7 +103,7 @@ for sp in spe:
         clf.fit(X_train, y_train)
         predictions = clf.predict(X_valid)
         print("Accuracy %.3f" % accuracy_score(y_valid, predictions))
-        cm = confusion_matrix(predictions,y_test)
+        cm = confusion_matrix(predictions,y_valid)
         sns.heatmap(cm,annot=True, cbar=False, square=True, fmt="d")
         print("finished")
 
@@ -114,7 +114,7 @@ for sp in spe:
         clf.fit(X_train, y_train)
         predictions = clf.predict(X_valid)
         print("Accuracy %.3f" % accuracy_score(y_valid, predictions))
-        cm = confusion_matrix(predictions,y_test)
+        cm = confusion_matrix(predictions,y_valid)
         sns.heatmap(cm,annot=True, cbar=False, square=True, fmt="d")
         print("finished")
 
@@ -126,7 +126,7 @@ for sp in spe:
         pool_strides = [2,2,2,2,2,2]
         dropout_para = [0.2,0.2,0.2,0.2,0.2,0.2]
         lr = 0.01
-        epoch = 50
+        epoch = 100
         trainloader,testloader=data_augment.model_setting_dataset(df_fold,fold,BATCH_SIZE,'CNN_conv1D')
 
         train_loader = trainloader
