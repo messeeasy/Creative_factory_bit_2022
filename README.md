@@ -103,7 +103,7 @@ K = 5
 AV  
 | Methods | Average(k) of Test acc | AUC |
 | :---------:| :------------------: | :------------------: |
-| SVM in signal | 4 | 6|
+| SVM in signal |  | |
 | MLP in signal | | |
 | CNN 1D in signal |   | |
 | SVM in Fourier transform |  |  |
@@ -117,21 +117,21 @@ AV
 MV  
 | Methods | Average(k) of Test acc | AUC |
 | :---------:| :------------------: | :------------------: |
-| SVM in signal | 4 | 6|
+| SVM in signal |  | |
 | MLP in signal | | |
 | CNN 1D in signal |   | |
 | SVM in Fourier transform |  |  |
 | MLP in Fourier transform |  |   |
 | CNN 1D in Fourier transform |   | |
 | LSTM & mcff　|    | |
-| CNN & mel | |  |
+| CNN & mel | 0.54326 | 0.59446 |
 | ResNet & mel |  | |
 <br>
 
 PV  
 | Methods | Average(k) of Test acc | AUC |
 | :---------:| :------------------: | :------------------: |
-| SVM in signal | 4 | 6|
+| SVM in signal |  | |
 | MLP in signal | | |
 | CNN 1D in signal |   | |
 | SVM in Fourier transform |  |  |
@@ -145,7 +145,7 @@ PV
 TV  
 | Methods | Average(k) of Test acc | AUC |
 | :---------:| :------------------: | :------------------: |
-| SVM in signal | 4 | 6|
+| SVM in signal |  | |
 | MLP in signal | | |
 | CNN 1D in signal |   | |
 | SVM in Fourier transform |  |  |
