@@ -157,7 +157,7 @@ TV
 
 The output, including the confusion matrix, is contained in the final_output folder.  
 
-When the executable is run, the result is output as an image file in the output folder.  
+When the executable is run, the result is output as an image file in the deploy/output folder.  
 <br>
 
 Sample: Example of CNN_2D_melspect results Others are similar<br>
