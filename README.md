@@ -98,6 +98,7 @@ Training with Train is highly accurate, but training with val,Test is not stable
 Overlearning is occurring.<br>
 
 <br>
+
 AV  
 | Methods | Average(k) of Test acc | AUC |
 | :---------:| :------------------: | :------------------: |
@@ -125,6 +126,7 @@ MV
 | CNN & mel | |  |
 | ResNet & mel |  | |
 <br>
+
 PV  
 | Methods | Average(k) of Val acc | Average(k) of Test acc | AUC |
 | :---------:| :------------------: | :------------------: | :------------------: |
@@ -139,6 +141,7 @@ PV
 | ResNet & mel |  | | |
 
 <br>
+
 TV  
 | Methods | Average(k) of Test acc | AUC |
 | :---------:| :------------------: | :------------------: |
