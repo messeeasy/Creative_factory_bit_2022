@@ -128,18 +128,17 @@ MV
 <br>
 
 PV  
-| Methods | Average(k) of Val acc | Average(k) of Test acc | AUC |
-| :---------:| :------------------: | :------------------: | :------------------: |
-| SVM in signal | 4 | 5 | 6|
-| MLP in signal | | | |
-| CNN 1D in signal |  | | |
-| SVM in Fourier transform |  | | |
-| MLP in Fourier transform |  |  | |
-| CNN 1D in Fourier transform |  | | |
-| LSTM & mcff　|  |  | |
-| CNN & mel | | | |
-| ResNet & mel |  | | |
-
+| Methods | Average(k) of Test acc | AUC |
+| :---------:| :------------------: | :------------------: |
+| SVM in signal | 4 | 6|
+| MLP in signal | | |
+| CNN 1D in signal |   | |
+| SVM in Fourier transform |  |  |
+| MLP in Fourier transform |  |   |
+| CNN 1D in Fourier transform |   | |
+| LSTM & mcff　|    | |
+| CNN & mel | |  |
+| ResNet & mel |  | |
 <br>
 
 TV  
