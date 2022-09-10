@@ -138,7 +138,7 @@ PV
 | MLP in Fourier transform |  |   |
 | CNN 1D in Fourier transform |   | |
 | LSTM & mcff　|    | |
-| CNN & mel | |  |
+| CNN & mel | 0.58058 | 0.50693 |
 | ResNet & mel |  | |
 <br>
 
