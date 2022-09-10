@@ -5,10 +5,25 @@ import pandas as pd
 import glob
 import FC_fucntion
 def get_path():
+    
     if os.name=='posix':
         dataset = [{'path': path, 'label': path.split('/' )[3] } for path in glob.glob("../dataset_heart_sound/AV/*/*.wav")]
     else:
         dataset = [{'path': path, 'label': path.split('\\' )[3] } for path in glob.glob("..\dataset_heart_sound\AV\**\*.wav")]
+    df = pd.DataFrame.from_dict(dataset)
+    return df
+def get_path_V(spe):
+    
+    
+    if os.name=='posix':
+        file="../dataset_heart_sound/"
+        file=os.path.join(file,spe+"/*/*.wav")
+        dataset = [{'path': path, 'label': path.split('/' )[3] } for path in glob.glob(file)]
+    else:
+        file="..\dataset_heart_sound"
+        file=os.path.join(file,spe+"\**\*.wav")
+        dataset = [{'path': path, 'label': path.split('\\' )[3] } for path in glob.glob(file)]
+
     df = pd.DataFrame.from_dict(dataset)
     return df
 def get_df_x(df):

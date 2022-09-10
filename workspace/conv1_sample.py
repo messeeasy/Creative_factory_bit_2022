@@ -29,6 +29,7 @@ import tensorflow as tf
 import random
 import data_arrange
 import noise_delet
+import seaborn as sns
 # %%
 print(os.name)
 if os.name=='posix':
@@ -61,14 +62,14 @@ data=[]
 for path in df['path']:
     data_x,data_fs=data_arrange.datalode(path,5)
 
-    data_std,me,st=noise_delet.standard_deviation(data_x,2)
+    #data_std,me,st=noise_delet.standard_deviation(data_x,2)
     
     fp = 90       #通過域端周波数[Hz]
     fs = 60      #阻止域端周波数[Hz]
     gpass = 5       #通過域端最大損失[dB]
     gstop = 40      #阻止域端最小損失[dB]
  
-    data_hig = noise_delet.highpass(data_std, data_fs, fp, fs, gpass, gstop)
+    #data_hig = noise_delet.highpass(data_std, data_fs, fp, fs, gpass, gstop)
 
     fp = 300       #通過域端周波数[Hz]kotei
     fs = 1000      #阻止域端周波数[Hz]
@@ -76,9 +77,9 @@ for path in df['path']:
     gstop = 40      #阻止域端最小損失[dB]kotei
  
  
-    data_low = noise_delet.lowpass(data_std, data_fs, fp, fs, gpass, gstop)
+    #data_low = noise_delet.lowpass(data_std, data_fs, fp, fs, gpass, gstop)
     data.append(data_x)
-    noise_delet.save_heart_sound(data_x,data_fs,path)
+    #noise_delet.save_heart_sound(data_x,data_fs,path)
     #print(data_low.shape)
 #%%
 df['filter'] = data
@@ -110,6 +111,7 @@ x_train, x_test, y_train, y_test, train_filenames, test_filenames = train_test_s
 #print("x_train: {0}, x_test: {1}".format(x_train.shape, x_test.shape))
 print(x_train)
 del x,y
+
 # %%
 clf = SVC()
 
@@ -121,7 +123,10 @@ clf.fit(x_train, y_train)
 # %%
 predictions = clf.predict(x_test)
 print("Accuracy %.3f" % accuracy_score(y_test, predictions))
-
+#%%
+cm = confusion_matrix(predictions,y_test)
+sns.heatmap(cm,annot=True, cbar=False, square=True, fmt="d")
+#plt.savefig('data/dst/sklearn_confusion_matrix.png')
 #%%
 #clf = MLPClassifier(hidden_layer_sizes=(1024,512,256,128,), max_iter=5000, verbose=True)
 clf = MLPClassifier(hidden_layer_sizes=(2000,1000,500,250,), 

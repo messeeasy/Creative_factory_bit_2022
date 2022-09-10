@@ -94,8 +94,14 @@ def save_heart_sound(data,data_fs,path):
 
         sf.write(os.path.join(file,name_wav),data, data_fs)
 
-def save_heart_sound_train(data,data_fs,L,path,train_test,K,K_num,num):
+def save_heart_sound_train(data,data_fs,L,path,train_test,K,K_num,num,l):
     
+    if l==0:
+        name=""
+    elif l==1:
+        name="_white_noise_"
+    else:
+        name="_shift_sound_"
     hd,name_wav=os.path.split(path)
     hd2,filename=os.path.split(hd)#filename    abnormal,normal
 
@@ -107,7 +113,10 @@ def save_heart_sound_train(data,data_fs,L,path,train_test,K,K_num,num):
     file2=os.path.join(file,"train_"+str(K_num))
     if not os.path.exists(file2):
         os.makedirs(file2)
-    sf.write(os.path.join(file2,filename+"_"+basename_without_ext+"_L"+str(L)+"_"+str(num)+".wav"),data, data_fs)
+    file2=os.path.join(file2,filename)
+    if not os.path.exists(file2):
+        os.makedirs(file2)
+    sf.write(os.path.join(file2,filename+"_"+basename_without_ext+"_L"+str(L)+"_"+str(num)+name+".wav"),data, data_fs)
 
 def save_heart_sound_test(data,data_fs,L,path,train_test,K):
     
@@ -119,8 +128,14 @@ def save_heart_sound_test(data,data_fs,L,path,train_test,K):
     
     if not os.path.exists(file):
         os.makedirs(file)
+    file=os.path.join(hd2+"_K"+str(K)+"_filter",train_test)
     
-    sf.write(os.path.join(file,filename+"_"+basename_without_ext+".wav"),data, data_fs)
+    if not os.path.exists(file):
+        os.makedirs(file)
+    file2=os.path.join(file,filename)
+    if not os.path.exists(file2):
+        os.makedirs(file2)
+    sf.write(os.path.join(file2,filename+"_"+basename_without_ext+".wav"),data, data_fs)
 
 def sava_Lsplit_heart_sound(data_L,split_num,L,data_fs,data_path,train_test):
     
@@ -144,7 +159,8 @@ def sava_Lsplit_heart_sound(data_L,split_num,L,data_fs,data_path,train_test):
                     #print(path)
                     data_x=data_L[i][data_count]
                     #print(data_count)
-                    save_heart_sound_train(data_x,data_fs,L,path,train_test,len(split_num),i,k)
+                    for l in range(3):
+                        save_heart_sound_train(data_x,data_fs,L,path,train_test,len(split_num),i,k,l)
                     data_count+=1
                 
                 path_count+=1
