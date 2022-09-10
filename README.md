@@ -155,6 +155,11 @@ TV
 | ResNet & mel |  | |
 <br>
 
+The output, including the confusion matrix, is contained in the final_output folder.  
+
+When the executable is run, the result is output as an image file in the output folder.  
+<br>
+
 Sample: Example of CNN_2D_melspect results Others are similar<br>
 ![accuracy_20220909_044808](https://user-images.githubusercontent.com/52558553/189246781-83731220-734b-42cc-bb98-6f71b4768a14.png)
 ![loss_20220909_044808](https://user-images.githubusercontent.com/52558553/189246998-fab8e099-f70f-4e9e-95af-619e1cca226e.png)
