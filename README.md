@@ -97,6 +97,47 @@ Since the Fourier transform does not include time series, we trained a 2-D CNN u
 Training with Train is highly accurate, but training with val,Test is not stable, 40~60%. 
 Overlearning is occurring.<br>
 
+AV  
+| Methods | Average(k) of Val acc | Average(k) of Test acc | AUC |
+| :---------:| :------------------: | :------------------: | :------------------: |
+| SVM in signal | 4 | 5 | 6|
+| MLP in signal | | | |
+| CNN 1D in signal |  | | |
+| SVM in Fourier transform |  | | |
+| MLP in Fourier transform |  |  | |
+| CNN 1D in Fourier transform |  | | |
+| LSTM & mcff　|  |  | |
+| CNN & mel | | | |
+| ResNet & mel |  | | |
+
+<br>
+MV
+| Methods | Average(k) of Val acc | Average(k) of Test acc | AUC |
+| :---------:| :------------------: | :------------------: | :------------------: |
+| SVM in signal | 4 | 5 | 6|
+| MLP in signal | | | |
+| CNN 1D in signal |  | | |
+| SVM in Fourier transform |  | | |
+| MLP in Fourier transform |  |  | |
+| CNN 1D in Fourier transform |  | | |
+| LSTM & mcff　|  |  | |
+| CNN & mel | | | |
+| ResNet & mel |  | | |
+<br>
+PV
+| Methods | Average(k) of Val acc | Average(k) of Test acc | AUC |
+| :---------:| :------------------: | :------------------: | :------------------: |
+| SVM in signal | 4 | 5 | 6|
+| MLP in signal | | | |
+| CNN 1D in signal |  | | |
+| SVM in Fourier transform |  | | |
+| MLP in Fourier transform |  |  | |
+| CNN 1D in Fourier transform |  | | |
+| LSTM & mcff　|  |  | |
+| CNN & mel | | | |
+| ResNet & mel |  | | |
+<br>
+TV
 | Methods | Average(k) of Val acc | Average(k) of Test acc | AUC |
 | :---------:| :------------------: | :------------------: | :------------------: |
 | SVM in signal | 4 | 5 | 6|
