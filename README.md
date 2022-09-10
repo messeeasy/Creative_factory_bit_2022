@@ -97,7 +97,35 @@ Since the Fourier transform does not include time series, we trained a 2-D CNN u
 Training with Train is highly accurate, but training with val,Test is not stable, 40~60%. 
 Overlearning is occurring.<br>
 
+<br>
 AV  
+| Methods | Average(k) of Test acc | AUC |
+| :---------:| :------------------: | :------------------: |
+| SVM in signal | 4 | 6|
+| MLP in signal | | |
+| CNN 1D in signal |   | |
+| SVM in Fourier transform |  |  |
+| MLP in Fourier transform |  |   |
+| CNN 1D in Fourier transform |   | |
+| LSTM & mcff　|    | |
+| CNN & mel | |  |
+| ResNet & mel |  | |
+<br>
+
+MV  
+| Methods | Average(k) of Test acc | AUC |
+| :---------:| :------------------: | :------------------: |
+| SVM in signal | 4 | 6|
+| MLP in signal | | |
+| CNN 1D in signal |   | |
+| SVM in Fourier transform |  |  |
+| MLP in Fourier transform |  |   |
+| CNN 1D in Fourier transform |   | |
+| LSTM & mcff　|    | |
+| CNN & mel | |  |
+| ResNet & mel |  | |
+<br>
+PV  
 | Methods | Average(k) of Val acc | Average(k) of Test acc | AUC |
 | :---------:| :------------------: | :------------------: | :------------------: |
 | SVM in signal | 4 | 5 | 6|
@@ -111,45 +139,19 @@ AV
 | ResNet & mel |  | | |
 
 <br>
-MV
-| Methods | Average(k) of Val acc | Average(k) of Test acc | AUC |
-| :---------:| :------------------: | :------------------: | :------------------: |
-| SVM in signal | 4 | 5 | 6|
-| MLP in signal | | | |
-| CNN 1D in signal |  | | |
-| SVM in Fourier transform |  | | |
-| MLP in Fourier transform |  |  | |
-| CNN 1D in Fourier transform |  | | |
-| LSTM & mcff　|  |  | |
-| CNN & mel | | | |
-| ResNet & mel |  | | |
+TV  
+| Methods | Average(k) of Test acc | AUC |
+| :---------:| :------------------: | :------------------: |
+| SVM in signal | 4 | 6|
+| MLP in signal | | |
+| CNN 1D in signal |   | |
+| SVM in Fourier transform |  |  |
+| MLP in Fourier transform |  |   |
+| CNN 1D in Fourier transform |   | |
+| LSTM & mcff　|    | |
+| CNN & mel | |  |
+| ResNet & mel |  | |
 <br>
-PV
-| Methods | Average(k) of Val acc | Average(k) of Test acc | AUC |
-| :---------:| :------------------: | :------------------: | :------------------: |
-| SVM in signal | 4 | 5 | 6|
-| MLP in signal | | | |
-| CNN 1D in signal |  | | |
-| SVM in Fourier transform |  | | |
-| MLP in Fourier transform |  |  | |
-| CNN 1D in Fourier transform |  | | |
-| LSTM & mcff　|  |  | |
-| CNN & mel | | | |
-| ResNet & mel |  | | |
-<br>
-TV
-| Methods | Average(k) of Val acc | Average(k) of Test acc | AUC |
-| :---------:| :------------------: | :------------------: | :------------------: |
-| SVM in signal | 4 | 5 | 6|
-| MLP in signal | | | |
-| CNN 1D in signal |  | | |
-| SVM in Fourier transform |  | | |
-| MLP in Fourier transform |  |  | |
-| CNN 1D in Fourier transform |  | | |
-| LSTM & mcff　|  |  | |
-| CNN & mel | | | |
-| ResNet & mel |  | | |
-
 
 Sample: Example of CNN_2D_melspect results Others are similar<br>
 ![accuracy_20220909_044808](https://user-images.githubusercontent.com/52558553/189246781-83731220-734b-42cc-bb98-6f71b4768a14.png)
