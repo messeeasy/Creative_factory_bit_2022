@@ -106,7 +106,7 @@ AV
 | SVM in signal | 0.541| 0.665|
 | MLP in signal | 0.495| 0.622|
 | CNN 1D in signal |   | |
-| SVM in Fourier transform |  |  |
+| SVM in Fourier transform | 0.495 | 0.6278 |
 | MLP in Fourier transform |  |   |
 | CNN 1D in Fourier transform | 0.4965  | 0.49324|
 | LSTM & mcff　|    | |
@@ -120,7 +120,7 @@ MV
 | SVM in signal | 0.5328 | 0.624|
 | MLP in signal |0.504 | 0.656|
 | CNN 1D in signal |   | |
-| SVM in Fourier transform |  |  |
+| SVM in Fourier transform | 0.5184 | 0.5824 |
 | MLP in Fourier transform |  |   |
 | CNN 1D in Fourier transform |  0.5501 | 0.5117|
 | LSTM & mcff　|    | |
@@ -134,7 +134,7 @@ PV
 | SVM in signal | 0.554 |0.606 |
 | MLP in signal | 0.513| 0.590|
 | CNN 1D in signal |   | |
-| SVM in Fourier transform |  |  |
+| SVM in Fourier transform | 0.526 |  0.5636|
 | MLP in Fourier transform |  |   |
 | CNN 1D in Fourier transform |  0.4514 |0.5117 |
 | LSTM & mcff　|    | |
@@ -148,7 +148,7 @@ TV
 | SVM in signal | 0.586 | 0.62|
 | MLP in signal | | |
 | CNN 1D in signal |   | |
-| SVM in Fourier transform |  |  |
+| SVM in Fourier transform | 0.5202 | 0.5242 |
 | MLP in Fourier transform |  |   |
 | CNN 1D in Fourier transform |  0.52051 | 0.534022|
 | LSTM & mcff　|    | |
