@@ -111,7 +111,7 @@ AV
 | CNN 1D in Fourier transform |   | |
 | LSTM & mcff　|    | |
 | CNN & mel | 0.55686 | 0.56582 |
-| ResNet & mel |  | |
+| ResNet & mel | 0.53036 |0.51722 |
 <br>
 
 MV  
@@ -125,7 +125,7 @@ MV
 | CNN 1D in Fourier transform |   | |
 | LSTM & mcff　|    | |
 | CNN & mel | 0.54326 | 0.59446 |
-| ResNet & mel |  | |
+| ResNet & mel | 0.51722 | 0.52446|
 <br>
 
 PV  
@@ -139,7 +139,7 @@ PV
 | CNN 1D in Fourier transform |   | |
 | LSTM & mcff　|    | |
 | CNN & mel | 0.58058 | 0.50693 |
-| ResNet & mel |  | |
+| ResNet & mel | 0.49806 | 0.45186|
 <br>
 
 TV  
@@ -153,7 +153,7 @@ TV
 | CNN 1D in Fourier transform |   | |
 | LSTM & mcff　|    | |
 | CNN & mel | 0.55047 | 0.56857 |
-| ResNet & mel |  | |
+| ResNet & mel |0.54306  |0.56418 |
 <br>
 
 The output, including the confusion matrix, is contained in the final_output folder.  
