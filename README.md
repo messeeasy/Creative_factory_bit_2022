@@ -103,12 +103,12 @@ K = 5
 AV  
 | Methods | Average(k) of Test acc | AUC |
 | :---------:| :------------------: | :------------------: |
-| SVM in signal |  | |
-| MLP in signal | | |
+| SVM in signal | 0.541| 0.665|
+| MLP in signal | 0.495| 0.622|
 | CNN 1D in signal |   | |
 | SVM in Fourier transform |  |  |
 | MLP in Fourier transform |  |   |
-| CNN 1D in Fourier transform |   | |
+| CNN 1D in Fourier transform | 0.4965  | 0.49324|
 | LSTM & mcff　|    | |
 | CNN & mel | 0.55686 | 0.56582 |
 | ResNet & mel | 0.53036 |0.51722 |
@@ -117,12 +117,12 @@ AV
 MV  
 | Methods | Average(k) of Test acc | AUC |
 | :---------:| :------------------: | :------------------: |
-| SVM in signal |  | |
-| MLP in signal | | |
+| SVM in signal | 0.5328 | 0.624|
+| MLP in signal |0.504 | 0.656|
 | CNN 1D in signal |   | |
 | SVM in Fourier transform |  |  |
 | MLP in Fourier transform |  |   |
-| CNN 1D in Fourier transform |   | |
+| CNN 1D in Fourier transform |  0.5501 | 0.5117|
 | LSTM & mcff　|    | |
 | CNN & mel | 0.54326 | 0.59446 |
 | ResNet & mel | 0.51722 | 0.52446|
@@ -131,12 +131,12 @@ MV
 PV  
 | Methods | Average(k) of Test acc | AUC |
 | :---------:| :------------------: | :------------------: |
-| SVM in signal |  | |
-| MLP in signal | | |
+| SVM in signal | 0.554 |0.606 |
+| MLP in signal | 0.513| 0.590|
 | CNN 1D in signal |   | |
 | SVM in Fourier transform |  |  |
 | MLP in Fourier transform |  |   |
-| CNN 1D in Fourier transform |   | |
+| CNN 1D in Fourier transform |  0.4514 |0.5117 |
 | LSTM & mcff　|    | |
 | CNN & mel | 0.58058 | 0.50693 |
 | ResNet & mel | 0.49806 | 0.45186|
@@ -145,12 +145,12 @@ PV
 TV  
 | Methods | Average(k) of Test acc | AUC |
 | :---------:| :------------------: | :------------------: |
-| SVM in signal |  | |
+| SVM in signal | 0.586 | 0.62|
 | MLP in signal | | |
 | CNN 1D in signal |   | |
 | SVM in Fourier transform |  |  |
 | MLP in Fourier transform |  |   |
-| CNN 1D in Fourier transform |   | |
+| CNN 1D in Fourier transform |  0.52051 | 0.534022|
 | LSTM & mcff　|    | |
 | CNN & mel | 0.55047 | 0.56857 |
 | ResNet & mel |0.54306  |0.56418 |
