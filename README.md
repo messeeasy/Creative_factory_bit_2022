@@ -105,11 +105,11 @@ AV
 | :---------:| :------------------: | :------------------: |
 | SVM in signal | 0.541| 0.665|
 | MLP in signal | 0.495| 0.622|
-| CNN 1D in signal |   | |
+| CNN 1D in signal |  0.5443 | 0.5063|
 | SVM in Fourier transform | 0.495 | 0.6278 |
-| MLP in Fourier transform |  |   |
+| MLP in Fourier transform | 0.5214 | 0.6672  |
 | CNN 1D in Fourier transform | 0.4965  | 0.49324|
-| LSTM & mcff　|    | |
+| LSTM & mcff　|  0.42038  | 0.640|
 | CNN & mel | 0.55686 | 0.56582 |
 | ResNet & mel | 0.53036 |0.51722 |
 <br>
@@ -119,11 +119,11 @@ MV
 | :---------:| :------------------: | :------------------: |
 | SVM in signal | 0.5328 | 0.624|
 | MLP in signal |0.504 | 0.656|
-| CNN 1D in signal |   | |
+| CNN 1D in signal | 0.5597  | 0.5202|
 | SVM in Fourier transform | 0.5184 | 0.5824 |
-| MLP in Fourier transform |  |   |
+| MLP in Fourier transform | 0.4908 | 0.6368  |
 | CNN 1D in Fourier transform |  0.5501 | 0.5117|
-| LSTM & mcff　|    | |
+| LSTM & mcff　|   0.53254 | 0.628|
 | CNN & mel | 0.54326 | 0.59446 |
 | ResNet & mel | 0.51722 | 0.52446|
 <br>
@@ -133,11 +133,11 @@ PV
 | :---------:| :------------------: | :------------------: |
 | SVM in signal | 0.554 |0.606 |
 | MLP in signal | 0.513| 0.590|
-| CNN 1D in signal |   | |
+| CNN 1D in signal |  0.5534 | 0.52378|
 | SVM in Fourier transform | 0.526 |  0.5636|
-| MLP in Fourier transform |  |   |
+| MLP in Fourier transform | 0.5083 | 0.5267  |
 | CNN 1D in Fourier transform |  0.4514 |0.5117 |
-| LSTM & mcff　|    | |
+| LSTM & mcff　|  0.53289  | 0.652|
 | CNN & mel | 0.58058 | 0.50693 |
 | ResNet & mel | 0.49806 | 0.45186|
 <br>
@@ -146,12 +146,12 @@ TV
 | Methods | Average(k) of Test acc | AUC |
 | :---------:| :------------------: | :------------------: |
 | SVM in signal | 0.586 | 0.62|
-| MLP in signal | | |
-| CNN 1D in signal |   | |
+| MLP in signal | 0.505| 0.613|
+| CNN 1D in signal |  0.556892 | 0.5188|
 | SVM in Fourier transform | 0.5202 | 0.5242 |
-| MLP in Fourier transform |  |   |
+| MLP in Fourier transform | 0.5134 |  0.574 |
 | CNN 1D in Fourier transform |  0.52051 | 0.534022|
-| LSTM & mcff　|    | |
+| LSTM & mcff　|  0.5244  | 0.642|
 | CNN & mel | 0.55047 | 0.56857 |
 | ResNet & mel |0.54306  |0.56418 |
 <br>
